@@ -68,3 +68,66 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
       }
     }
   }
+  
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <FaSpinner className="animate-spin text-primary-600 text-4xl" />
+      </div>
+    )
+  }
+  
+  if (error || !client) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+          <p className="text-red-700">{error || 'Client not found'}</p>
+          <Link 
+            href="/admin/clients"
+            className="mt-2 text-primary-600 hover:text-primary-800 transition-colors inline-block"
+          >
+            Back to Clients
+          </Link>
+        </div>
+      </div>
+    )
+  }
+  
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center">
+          <Link 
+            href="/admin/clients"
+            className="text-gray-600 hover:text-gray-800 mr-4 transition-colors"
+          >
+            <FaArrowLeft />
+          </Link>
+          <h1 className="text-2xl font-bold text-gray-800">Client Details</h1>
+        </div>
+        
+        <div className="flex space-x-2">
+          <Link 
+            href={`/admin/clients/${params.id}/edit`}
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center transition-colors"
+          >
+            <FaEdit className="mr-2" />
+            Edit
+          </Link>
+          <button
+            onClick={handleDeleteClient}
+            className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg flex items-center transition-colors"
+          >
+            <FaTrash className="mr-2" />
+            Delete
+          </button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Client Information */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900">Client Information</h2>
+            </div>
