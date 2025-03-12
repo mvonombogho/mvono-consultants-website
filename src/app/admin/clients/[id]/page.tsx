@@ -141,7 +141,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 mb-1">Status</h3>
-                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                  <span className={`px-2 py-1 inline-flex text-xs font-medium rounded-full ${
                     client.status === 'active' 
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-red-100 text-red-800'
@@ -152,12 +152,12 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 mb-1">Contact Person</h3>
-                  <p className="text-base text-gray-900">{client.contactPerson || '-'}</p>
+                  <p className="text-base text-gray-900">{client.contactPerson || '—'}</p>
                 </div>
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 mb-1">Industry</h3>
-                  <p className="text-base text-gray-900">{client.industry || '-'}</p>
+                  <p className="text-base text-gray-900">{client.industry || '—'}</p>
                 </div>
                 
                 <div>
@@ -170,9 +170,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                       >
                         {client.email}
                       </a>
-                    ) : (
-                      '-'
-                    )}
+                    ) : '—'}
                   </p>
                 </div>
                 
@@ -186,131 +184,142 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                       >
                         {client.phone}
                       </a>
-                    ) : (
-                      '-'
-                    )}
+                    ) : '—'}
                   </p>
                 </div>
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 mb-1">KRA PIN</h3>
-                  <p className="text-base text-gray-900">{client.kraPin || '-'}</p>
+                  <p className="text-base text-gray-900">{client.kraPin || '—'}</p>
                 </div>
                 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500 mb-1">Client Since</h3>
-                  <p className="text-base text-gray-900">{client.createdAt ? formatDate(client.createdAt) : '-'}</p>
+                  <p className="text-base text-gray-900">{client.createdAt ? formatDate(client.createdAt) : '—'}</p>
                 </div>
-              </div>
-              
-              <div className="mt-6">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Address</h3>
-                <p className="text-base text-gray-900 whitespace-pre-line">{client.address || '-'}</p>
+                
+                <div className="md:col-span-2">
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">Address</h3>
+                  <p className="text-base text-gray-900 whitespace-pre-line">{client.address || '—'}</p>
+                </div>
               </div>
             </div>
           </div>
           
-          {/* Project History */}
+          {/* Client Projects */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden mt-8">
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">Project History</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Projects</h2>
+              
               <Link 
-                href={`/admin/clients/${params.id}/projects`}
+                href={`/admin/projects/new?clientId=${params.id}`}
                 className="text-sm text-primary-600 hover:text-primary-800 transition-colors"
               >
-                View All
+                + Add Project
               </Link>
             </div>
             
             <div className="p-6">
-              {client._count?.projects > 0 ? (
-                <div className="text-gray-500">
-                  <p className="mb-4">This client has {client._count.projects} project(s).</p>
-                  <Link 
-                    href={`/admin/clients/${params.id}/projects`}
-                    className="bg-primary-50 text-primary-700 px-4 py-2 rounded-lg inline-flex items-center transition-colors hover:bg-primary-100"
-                  >
-                    <FaClipboardList className="mr-2" />
-                    View Project History
-                  </Link>
+              {client._count?.projects ? (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {/* This would be populated with actual project data */}
+                      <tr>
+                        <td className="px-4 py-3 text-gray-500 text-center" colSpan={4}>
+                          Project list will be shown here
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               ) : (
-                <div className="text-gray-500">
-                  <p className="mb-4">No projects found for this client.</p>
-                  <Link 
-                    href="/admin/projects/new"
-                    className="bg-primary-50 text-primary-700 px-4 py-2 rounded-lg inline-flex items-center transition-colors hover:bg-primary-100"
-                  >
-                    <FaClipboardList className="mr-2" />
-                    Create New Project
-                  </Link>
+                <div className="text-center py-6 text-gray-500">
+                  No projects yet.
+                  <div className="mt-2">
+                    <Link 
+                      href={`/admin/projects/new?clientId=${params.id}`}
+                      className="text-primary-600 hover:text-primary-800 transition-colors"
+                    >
+                      Create your first project for this client
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
           </div>
         </div>
         
-        {/* Quick Actions & Financials */}
+        {/* Client Stats and Quick Actions */}
         <div>
-          {/* Quick Actions */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
               <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
             </div>
             
-            <div className="p-6 space-y-4">
-              <Link 
-                href={`/admin/clients/${params.id}/invoices`}
-                className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg flex items-center justify-center transition-colors hover:bg-primary-700"
-              >
-                <FaFileInvoice className="mr-2" />
-                View Invoices
-              </Link>
-              
-              <Link 
-                href={`/admin/invoices/new?clientId=${params.id}`}
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg flex items-center justify-center transition-colors hover:bg-green-700"
-              >
-                <FaFileInvoice className="mr-2" />
-                Create New Invoice
-              </Link>
-              
-              <Link 
-                href={`/admin/projects/new?clientId=${params.id}`}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg flex items-center justify-center transition-colors hover:bg-blue-700"
-              >
-                <FaClipboardList className="mr-2" />
-                Create New Project
-              </Link>
+            <div className="p-6">
+              <div className="space-y-2">
+                <Link 
+                  href={`/admin/projects/new?clientId=${params.id}`}
+                  className="bg-white border border-gray-300 rounded-md py-2 px-4 w-full text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                >
+                  <span>New Project</span>
+                  <FaClipboardList />
+                </Link>
+                
+                <Link 
+                  href={`/admin/clients/${params.id}/invoices/new`}
+                  className="bg-white border border-gray-300 rounded-md py-2 px-4 w-full text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                >
+                  <span>New Invoice</span>
+                  <FaFileInvoice />
+                </Link>
+                
+                <Link 
+                  href={`/admin/clients/${params.id}/invoices`}
+                  className="bg-white border border-gray-300 rounded-md py-2 px-4 w-full text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-between"
+                >
+                  <span>View Invoices</span>
+                  <FaFileInvoice />
+                </Link>
+              </div>
             </div>
           </div>
           
-          {/* Financial Summary */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden mt-8">
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900">Financial Summary</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Client Statistics</h2>
             </div>
             
             <div className="p-6">
               <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Total Invoices</h3>
-                  <p className="text-xl font-semibold text-gray-900">{client._count?.invoices || 0}</p>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">Projects</span>
+                  <span className="text-sm font-medium text-gray-900">{client._count?.projects || 0}</span>
                 </div>
                 
-                {client._count?.invoices > 0 ? (
-                  <Link 
-                    href={`/admin/clients/${params.id}/invoices`}
-                    className="bg-primary-50 text-primary-700 px-4 py-2 rounded-lg inline-flex items-center transition-colors hover:bg-primary-100 w-full justify-center"
-                  >
-                    <FaFileInvoice className="mr-2" />
-                    View All Invoices
-                  </Link>
-                ) : (
-                  <div className="text-gray-500 text-sm">
-                    No invoices found for this client.
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">Invoices</span>
+                  <span className="text-sm font-medium text-gray-900">{client._count?.invoices || 0}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">Total Revenue</span>
+                  <span className="text-sm font-medium text-gray-900">KSh 0</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-500">Outstanding Balance</span>
+                  <span className="text-sm font-medium text-gray-900">KSh 0</span>
+                </div>
               </div>
             </div>
           </div>
