@@ -31,6 +31,7 @@ model Client {
   address         String?
   kraPin          String?
   industry        String?
+  status          String    @default("active")
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   projects        Project[]
@@ -44,7 +45,9 @@ model Subcontractor {
   contactPerson   String?
   email           String?
   phone           String?
+  address         String?
   specialty       String?
+  status          String    @default("active")
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   projects        Project[]
@@ -57,7 +60,9 @@ model Project {
   description     String?
   startDate       DateTime?
   endDate         DateTime?
-  status          String        @default("pending")
+  status          String        @default("planned") // planned, in-progress, completed, cancelled
+  value           Float?
+  completion      Int           @default(0) // percentage
   clientId        String
   client          Client        @relation(fields: [clientId], references: [id])
   subcontractorId String?
@@ -65,6 +70,22 @@ model Project {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   invoices        Invoice[]
+  tasks           Task[]
+}
+
+// Task model
+model Task {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  status          String    @default("pending") // pending, in-progress, completed
+  dueDate         DateTime?
+  priority        String    @default("medium") // low, medium, high
+  assignedTo      String?
+  projectId       String
+  project         Project   @relation(fields: [projectId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 // Invoice model
@@ -72,13 +93,44 @@ model Invoice {
   id              String    @id @default(cuid())
   invoiceNumber   String    @unique
   amount          Float
-  status          String    @default("pending") // pending, paid, overdue, etc.
+  tax             Float?
+  total           Float
+  status          String    @default("pending") // draft, pending, paid, overdue, cancelled
   issueDate       DateTime  @default(now())
   dueDate         DateTime
+  paymentDate     DateTime?
+  notes           String?
   clientId        String
   client          Client    @relation(fields: [clientId], references: [id])
   projectId       String?
   project         Project?  @relation(fields: [projectId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  items           InvoiceItem[]
+}
+
+// Invoice Item model
+model InvoiceItem {
+  id              String    @id @default(cuid())
+  description     String
+  quantity        Float
+  unitPrice       Float
+  amount          Float
+  invoiceId       String
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Expense model
+model Expense {
+  id              String    @id @default(cuid())
+  description     String
+  amount          Float
+  date            DateTime
+  category        String?
+  notes           String?
+  projectId       String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
