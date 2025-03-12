@@ -4,19 +4,12 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Clean database for development/testing
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Cleaning database...')
-    await prisma.invoice.deleteMany({})
-    await prisma.project.deleteMany({})
-    await prisma.client.deleteMany({})
-    await prisma.user.deleteMany({})
-  }
+  console.log('Start seeding database...')
   
   // Create admin user
-  console.log('Creating admin user...')
   const hashedPassword = await bcrypt.hash('password123', 10)
-  const adminUser = await prisma.user.upsert({
+  
+  const admin = await prisma.user.upsert({
     where: { email: 'admin@mvonoconsultants.com' },
     update: {},
     create: {
@@ -24,13 +17,13 @@ async function main() {
       email: 'admin@mvonoconsultants.com',
       password: hashedPassword,
       role: 'admin',
-    },
+    }
   })
-  console.log(`Created admin user: ${adminUser.name}`)
   
-  // Create clients
-  console.log('Creating sample clients...')
-  const sampleClients = [
+  console.log(`Created admin user with id: ${admin.id}`)
+  
+  // Create sample clients
+  const clients = [
     {
       name: 'Lafarge',
       contactPerson: 'John Smith',
@@ -38,8 +31,7 @@ async function main() {
       phone: '+254 712 345 678',
       industry: 'Manufacturing',
       status: 'active',
-      address: 'Industrial Area\nNairobi, Kenya',
-      kraPin: 'ABC123456D',
+      address: 'Industrial Area, Nairobi, Kenya'
     },
     {
       name: 'KTDA',
@@ -48,8 +40,7 @@ async function main() {
       phone: '+254 723 456 789',
       industry: 'Agriculture',
       status: 'active',
-      address: 'Tea Avenue\nKericho, Kenya',
-      kraPin: 'DEF789012G',
+      address: 'Kericho, Kenya'
     },
     {
       name: 'Dormans Coffee',
@@ -58,8 +49,7 @@ async function main() {
       phone: '+254 734 567 890',
       industry: 'Food Processing',
       status: 'active',
-      address: 'Coffee Lane\nThika, Kenya',
-      kraPin: 'HIJ345678K',
+      address: 'Ruiru, Kenya'
     },
     {
       name: 'Radisson Blu',
@@ -68,8 +58,7 @@ async function main() {
       phone: '+254 745 678 901',
       industry: 'Hospitality',
       status: 'inactive',
-      address: 'Upper Hill\nNairobi, Kenya',
-      kraPin: 'LMN901234P',
+      address: 'Upper Hill, Nairobi, Kenya'
     },
     {
       name: 'National Cement',
@@ -78,127 +67,137 @@ async function main() {
       phone: '+254 756 789 012',
       industry: 'Manufacturing',
       status: 'active',
-      address: 'Athi River\nMachakos, Kenya',
-      kraPin: 'QRS567890T',
+      address: 'Athi River, Kenya'
     },
   ]
   
-  for (const clientData of sampleClients) {
-    const client = await prisma.client.create({
-      data: clientData,
+  for (const client of clients) {
+    const createdClient = await prisma.client.upsert({
+      where: { name: client.name },
+      update: client,
+      create: client
     })
-    console.log(`Created client: ${client.name}`)
+    
+    console.log(`Created client with id: ${createdClient.id}`)
   }
   
-  // Create projects
-  console.log('Creating sample projects...')
-  const clients = await prisma.client.findMany()
+  // Create sample projects
+  const allClients = await prisma.client.findMany()
   
-  // Define project types matching company services
-  const projectTypes = [
-    'Environmental Impact Assessment',
-    'Occupational Safety',
-    'Fire Safety Audit',
-    'Energy Audit',
-    'Statutory Inspection',
-    'Non-Destructive Testing',
+  const projects = [
+    {
+      title: 'Fire Safety Audit',
+      description: 'Comprehensive fire safety audit for manufacturing plant',
+      startDate: new Date('2025-02-10'),
+      endDate: new Date('2025-03-15'),
+      status: 'in-progress',
+      clientId: allClients[0].id, // Lafarge
+    },
+    {
+      title: 'Occupational Safety Risk Assessment',
+      description: 'Workplace safety assessment and risk mitigation planning',
+      startDate: new Date('2025-01-20'),
+      endDate: new Date('2025-02-28'),
+      status: 'completed',
+      clientId: allClients[1].id, // KTDA
+    },
+    {
+      title: 'Environmental Impact Assessment',
+      description: 'EIA for new processing facility',
+      startDate: new Date('2025-03-01'),
+      endDate: new Date('2025-04-15'),
+      status: 'planned',
+      clientId: allClients[2].id, // Dormans Coffee
+    },
+    {
+      title: 'Energy Audit',
+      description: 'Comprehensive energy usage audit and efficiency recommendations',
+      startDate: new Date('2025-02-15'),
+      endDate: new Date('2025-03-20'),
+      status: 'in-progress',
+      clientId: allClients[3].id, // Radisson Blu
+    },
   ]
   
-  // Current date for reference
-  const now = new Date()
-  
-  // Sample projects for each client
-  for (const client of clients) {
-    // Random number of projects (1-3)
-    const numProjects = Math.floor(Math.random() * 3) + 1
+  for (const project of projects) {
+    const createdProject = await prisma.project.upsert({
+      where: { 
+        title_clientId: {
+          title: project.title,
+          clientId: project.clientId
+        }
+      },
+      update: project,
+      create: project
+    })
     
-    for (let i = 0; i < numProjects; i++) {
-      const projectType = projectTypes[Math.floor(Math.random() * projectTypes.length)]
-      
-      // Random start date within last 6 months
-      const startDate = new Date(now)
-      startDate.setMonth(startDate.getMonth() - Math.floor(Math.random() * 6))
-      
-      // Random end date between start date and 2 months later
-      const endDate = new Date(startDate)
-      endDate.setMonth(endDate.getMonth() + Math.floor(Math.random() * 2) + 1)
-      
-      // Random status based on dates
-      let status
-      if (endDate > now) {
-        status = startDate <= now ? 'in-progress' : 'planned'
-      } else {
-        status = 'completed'
-      }
-      
-      // Random project value between 50,000 and 250,000
-      const value = Math.floor(Math.random() * 200000) + 50000
-      
-      // Random completion percentage based on status
-      let completion
-      if (status === 'completed') {
-        completion = 100
-      } else if (status === 'planned') {
-        completion = 0
-      } else {
-        // For in-progress, calculate based on current date position between start and end
-        const totalDuration = endDate.getTime() - startDate.getTime()
-        const elapsedDuration = now.getTime() - startDate.getTime()
-        completion = Math.min(Math.floor((elapsedDuration / totalDuration) * 100), 99)
-      }
-      
-      const project = await prisma.project.create({
-        data: {
-          title: `${projectType} for ${client.name}`,
-          description: `Comprehensive ${projectType.toLowerCase()} to ensure compliance and safety.`,
-          startDate,
-          endDate,
-          status,
-          clientId: client.id,
-          value,
-          completion,
-        },
-      })
-      
-      console.log(`Created project: ${project.title}`)
-      
-      // Create invoice for the project if it's in progress or completed
-      if (status !== 'planned') {
-        const invoiceDate = new Date(startDate)
-        invoiceDate.setDate(invoiceDate.getDate() + 7) // Invoice created a week after project starts
-        
-        const dueDate = new Date(invoiceDate)
-        dueDate.setDate(dueDate.getDate() + 30) // Due in 30 days
-        
-        // Invoice status based on due date
-        const invoiceStatus = status === 'completed' ? 'paid' : (dueDate < now ? 'overdue' : 'pending')
-        
-        // Invoice number
-        const invoiceNumber = `INV-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 900) + 100)}`
-        
-        const invoice = await prisma.invoice.create({
-          data: {
-            invoiceNumber,
-            amount: value,
-            status: invoiceStatus,
-            issueDate: invoiceDate,
-            dueDate,
-            clientId: client.id,
-            projectId: project.id,
-          },
-        })
-        
-        console.log(`Created invoice: ${invoice.invoiceNumber}`)
-      }
-    }
+    console.log(`Created project with id: ${createdProject.id}`)
   }
   
-  console.log('Seeding completed successfully!')
+  // Create sample invoices
+  const invoices = [
+    {
+      invoiceNumber: 'INV-2025-001',
+      amount: 120000,
+      status: 'paid',
+      issueDate: new Date('2025-03-10'),
+      dueDate: new Date('2025-04-10'),
+      clientId: allClients[0].id, // Lafarge
+      projectId: (await prisma.project.findFirst({ where: { clientId: allClients[0].id } }))?.id
+    },
+    {
+      invoiceNumber: 'INV-2025-002',
+      amount: 85000,
+      status: 'paid',
+      issueDate: new Date('2025-03-05'),
+      dueDate: new Date('2025-04-05'),
+      clientId: allClients[1].id, // KTDA
+      projectId: (await prisma.project.findFirst({ where: { clientId: allClients[1].id } }))?.id
+    },
+    {
+      invoiceNumber: 'INV-2025-003',
+      amount: 65000,
+      status: 'pending',
+      issueDate: new Date('2025-02-28'),
+      dueDate: new Date('2025-03-28'),
+      clientId: allClients[2].id, // Dormans Coffee
+      projectId: (await prisma.project.findFirst({ where: { clientId: allClients[2].id } }))?.id
+    },
+    {
+      invoiceNumber: 'INV-2025-004',
+      amount: 110000,
+      status: 'overdue',
+      issueDate: new Date('2025-02-15'),
+      dueDate: new Date('2025-03-15'),
+      clientId: allClients[3].id, // Radisson Blu
+      projectId: (await prisma.project.findFirst({ where: { clientId: allClients[3].id } }))?.id
+    },
+    {
+      invoiceNumber: 'INV-2025-005',
+      amount: 220000,
+      status: 'paid',
+      issueDate: new Date('2025-02-12'),
+      dueDate: new Date('2025-03-12'),
+      clientId: allClients[4].id, // National Cement
+    },
+  ]
+  
+  for (const invoice of invoices) {
+    const createdInvoice = await prisma.invoice.upsert({
+      where: { invoiceNumber: invoice.invoiceNumber },
+      update: invoice,
+      create: invoice
+    })
+    
+    console.log(`Created invoice with id: ${createdInvoice.id}`)
+  }
+  
+  console.log('Seeding completed successfully')
 }
 
 main()
   .catch((e) => {
-    console.error('Error seeding database:', e)
+    console.error(e)
     process.exit(1)
   })
   .finally(async () => {
