@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FaSave, FaTimes } from 'react-icons/fa'
+import { useClients } from '@/contexts/ClientContext'
+import { ClientData } from '@/lib/clients'
 
 // Industry options for dropdown
 const industryOptions = [
@@ -26,8 +28,9 @@ const industryOptions = [
 
 export default function NewClientPage() {
   const router = useRouter()
+  const { createClient } = useClients()
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ClientData>({
     name: '',
     contactPerson: '',
     email: '',
@@ -88,18 +91,19 @@ export default function NewClientPage() {
       return
     }
     
-    // Simulate saving
+    // Save client
     setSaving(true)
     
     try {
-      // Here you would normally send the data to your API
-      // For now, we'll just simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Redirect back to clients list
-      router.push('/admin/clients')
+      const newClient = await createClient(formData)
+      if (newClient) {
+        router.push('/admin/clients')
+      } else {
+        setErrors({ submit: 'Failed to create client. Please try again.' })
+        setSaving(false)
+      }
     } catch (error) {
-      console.error('Error saving client:', error)
+      console.error('Error creating client:', error)
       setErrors({ submit: 'An error occurred while saving. Please try again.' })
       setSaving(false)
     }
@@ -156,7 +160,7 @@ export default function NewClientPage() {
                 type="text"
                 id="contactPerson"
                 name="contactPerson"
-                value={formData.contactPerson}
+                value={formData.contactPerson || ''}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
@@ -171,7 +175,7 @@ export default function NewClientPage() {
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
+                value={formData.email || ''}
                 onChange={handleChange}
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
@@ -191,7 +195,7 @@ export default function NewClientPage() {
                 type="tel"
                 id="phone"
                 name="phone"
-                value={formData.phone}
+                value={formData.phone || ''}
                 onChange={handleChange}
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
@@ -211,7 +215,7 @@ export default function NewClientPage() {
               <select
                 id="industry"
                 name="industry"
-                value={formData.industry}
+                value={formData.industry || ''}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
@@ -231,7 +235,7 @@ export default function NewClientPage() {
                 type="text"
                 id="kraPin"
                 name="kraPin"
-                value={formData.kraPin}
+                value={formData.kraPin || ''}
                 onChange={handleChange}
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   errors.kraPin ? 'border-red-500' : 'border-gray-300'
@@ -250,7 +254,7 @@ export default function NewClientPage() {
               <select
                 id="status"
                 name="status"
-                value={formData.status}
+                value={formData.status || 'active'}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
@@ -268,7 +272,7 @@ export default function NewClientPage() {
             <textarea
               id="address"
               name="address"
-              value={formData.address}
+              value={formData.address || ''}
               onChange={handleChange}
               rows={3}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
