@@ -1,15 +1,11 @@
-"use client";
-
-import { Suspense } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
+import { Metadata } from 'next';
 import SubcontractorsList from '@/components/admin/subcontractors/SubcontractorsList';
 
+export const metadata: Metadata = {
+  title: 'Subcontractors | Mvono Consultants Admin',
+  description: 'Manage your subcontractors for various projects and services',
+};
+
 export default function SubcontractorsPage() {
-  return (
-    <AdminLayout title="Subcontractors">
-      <Suspense fallback={<div>Loading subcontractors...</div>}>
-        <SubcontractorsList />
-      </Suspense>
-    </AdminLayout>
-  );
+  return <SubcontractorsList />;
 }
