@@ -19,6 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Card,
@@ -271,6 +272,9 @@ const ServiceForm = ({ serviceId }: ServiceFormProps) => {
                         <FormControl>
                           <Input placeholder="Enter service name" {...field} />
                         </FormControl>
+                        <FormDescription>
+                          The official name of the service as it will appear in quotes and invoices.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -299,6 +303,9 @@ const ServiceForm = ({ serviceId }: ServiceFormProps) => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormDescription>
+                          Categorize your service for better organization and reporting.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -318,6 +325,9 @@ const ServiceForm = ({ serviceId }: ServiceFormProps) => {
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                           />
                         </FormControl>
+                        <FormDescription>
+                          Standard price before tax. You can adjust this per quote when needed.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -339,6 +349,9 @@ const ServiceForm = ({ serviceId }: ServiceFormProps) => {
                             value={field.value || ''}
                           />
                         </FormControl>
+                        <FormDescription>
+                          A detailed description of what this service includes. This helps your team and may appear in quotes.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
