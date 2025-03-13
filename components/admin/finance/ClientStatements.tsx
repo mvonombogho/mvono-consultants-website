@@ -371,3 +371,40 @@ const ClientStatements = () => {
       );
     }
   }, [isLoading, filteredStatements]);
+
+  // Animation for filters
+  useEffect(() => {
+    if (filtersRef.current) {
+      if (showFilters) {
+        gsap.fromTo(
+          filtersRef.current,
+          { opacity: 0, height: 0 },
+          { opacity: 1, height: 'auto', duration: 0.3, ease: "power2.out" }
+        );
+      } else {
+        gsap.to(
+          filtersRef.current,
+          { opacity: 0, height: 0, duration: 0.3, ease: "power2.in" }
+        );
+      }
+    }
+  }, [showFilters]);
+
+  // Modal animations
+  useEffect(() => {
+    if (isModalOpen && modalRef.current && modalBackdropRef.current) {
+      // Animate backdrop
+      gsap.fromTo(
+        modalBackdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+
+      // Animate modal
+      gsap.fromTo(
+        modalRef.current,
+        { opacity: 0, y: 20, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.2)" }
+      );
+    }
+  }, [isModalOpen]);
