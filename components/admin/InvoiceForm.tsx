@@ -412,3 +412,148 @@ export default function InvoiceForm({ initialData, clientId, projectId, isEdit =
           </div>
         </div>
       </div>
+      
+      {/* Invoice Items */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold mb-4">Invoice Items</h2>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="text-left p-3 text-sm font-medium text-gray-700">Description</th>
+                <th className="text-right p-3 text-sm font-medium text-gray-700">Quantity</th>
+                <th className="text-right p-3 text-sm font-medium text-gray-700">Unit Price</th>
+                <th className="text-right p-3 text-sm font-medium text-gray-700">Tax (%)</th>
+                <th className="text-right p-3 text-sm font-medium text-gray-700">Amount</th>
+                <th className="p-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="p-3">
+                    <input
+                      type="text"
+                      placeholder="Item description"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      value={item.description}
+                      onChange={(e) => updateItem(index, 'description', e.target.value)}
+                      required
+                    />
+                  </td>
+                  <td className="p-3">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-right"
+                      value={item.quantity}
+                      onChange={(e) => updateItem(index, 'quantity', e.target.value)}
+                      required
+                    />
+                  </td>
+                  <td className="p-3">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-right"
+                      value={item.unitPrice}
+                      onChange={(e) => updateItem(index, 'unitPrice', e.target.value)}
+                      required
+                    />
+                  </td>
+                  <td className="p-3">
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-right"
+                      value={item.taxRate}
+                      onChange={(e) => updateItem(index, 'taxRate', e.target.value)}
+                    />
+                  </td>
+                  <td className="p-3 text-right font-medium">
+                    {item.amount.toLocaleString('en-KE', { style: 'currency', currency: 'KES' })}
+                  </td>
+                  <td className="p-3 text-center">
+                    <button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                      disabled={items.length === 1}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <button
+          type="button"
+          onClick={addItem}
+          className="mt-4 flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <Plus size={18} className="mr-1" />
+          Add Item
+        </button>
+        
+        {/* Totals */}
+        <div className="mt-6 border-t border-gray-200 pt-4">
+          <div className="flex justify-end">
+            <div className="w-64 space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Subtotal:</span>
+                <span className="font-medium">
+                  {subtotal.toLocaleString('en-KE', { style: 'currency', currency: 'KES' })}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Tax Amount:</span>
+                <span className="font-medium">
+                  {taxAmount.toLocaleString('en-KE', { style: 'currency', currency: 'KES' })}
+                </span>
+              </div>
+              <div className="flex justify-between text-lg font-bold">
+                <span>Total:</span>
+                <span>
+                  {totalAmount.toLocaleString('en-KE', { style: 'currency', currency: 'KES' })}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Notes */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold mb-4">Additional Notes</h2>
+        <textarea
+          id="notes"
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          placeholder="Enter any additional notes or payment instructions"
+          value={invoiceData.notes}
+          onChange={(e) => setInvoiceData({ ...invoiceData, notes: e.target.value })}
+        />
+      </div>
+      
+      {/* Submit Button */}
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-md transition-colors flex items-center disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          <Save className="mr-2" size={18} />
+          {loading ? 'Saving...' : (isEdit ? 'Update Invoice' : 'Create Invoice')}
+        </button>
+      </div>
+    </form>
+  );
+}
