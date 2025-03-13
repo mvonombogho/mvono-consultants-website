@@ -339,3 +339,95 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
       </div>
     );
   }
+  
+  // Calculate task statistics
+  const completedTasks = project.tasks.filter(task => task.status === 'completed').length;
+  const inProgressTasks = project.tasks.filter(task => task.status === 'in_progress').length;
+  const totalTasks = project.tasks.length;
+  const taskCompletionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  
+  // Calculate invoice statistics
+  const totalInvoiced = project.invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
+  const paidInvoices = project.invoices.filter(invoice => invoice.status === 'paid');
+  const totalPaid = paidInvoices.reduce((sum, invoice) => sum + invoice.amount, 0);
+  const outstandingAmount = totalInvoiced - totalPaid;
+  
+  // Render the project detail
+  return (
+    <div className="space-y-6">
+      {/* Project Header */}
+      <div className="bg-white rounded-lg shadow overflow-hidden" ref={headerRef}>
+        <div className="p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{project.title}</h1>
+              <Link href={`/admin/clients/${project.clientId}`} className="text-blue-600 hover:text-blue-800 text-sm">
+                {project.clientName}
+              </Link>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Link 
+                href={`/admin/projects/${project.id}/edit`}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                <span>Edit Project</span>
+              </Link>
+              
+              <button 
+                onClick={() => setIsDeleteModalOpen(true)}
+                className="px-4 py-2 bg-white border border-red-600 text-red-600 rounded-md hover:bg-red-50 transition-colors flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-4 mt-6">
+            {/* Status */}
+            <div className="flex items-center gap-1">
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusInfo(project.status).color}`}>
+                {getStatusInfo(project.status).icon}
+                <span>{project.status.charAt(0).toUpperCase() + project.status.slice(1)}</span>
+              </div>
+            </div>
+            
+            {/* Project Value */}
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <DollarSign className="h-4 w-4" />
+              <span>{formatCurrency(project.totalValue)}</span>
+            </div>
+            
+            {/* Date */}
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <Calendar className="h-4 w-4" />
+              <span>
+                {formatDate(project.startDate)} {project.endDate ? ` to ${formatDate(project.endDate)}` : ' (ongoing)'}
+              </span>
+            </div>
+            
+            {/* Subcontractors */}
+            {project.subcontractors.length > 0 && (
+              <div className="flex items-center gap-1 text-sm text-gray-500">
+                <Users className="h-4 w-4" />
+                <span>{project.subcontractors.length} Subcontractor{project.subcontractors.length !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Completion Progress */}
+          <div className="mt-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">Project Completion</span>
+              <span className="text-sm font-medium text-gray-700">{project.completionPercentage}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div 
+                className={`h-2.5 rounded-full ${project.status === 'active' ? 'bg-blue-600' : project.status === 'completed' ? 'bg-green-600' : 'bg-yellow-600'}`}
+                style={{ width: `${project.completionPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
