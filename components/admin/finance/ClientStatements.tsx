@@ -408,3 +408,114 @@ const ClientStatements = () => {
       );
     }
   }, [isModalOpen]);
+
+  const closeModal = () => {
+    if (modalRef.current && modalBackdropRef.current) {
+      // Animate out
+      gsap.to(modalRef.current, {
+        opacity: 0, y: 20, scale: 0.95, duration: 0.3, ease: "power2.in",
+        onComplete: () => {
+          setIsModalOpen(false);
+          setSelectedStatement(null);
+        }
+      });
+
+      gsap.to(modalBackdropRef.current, {
+        opacity: 0, duration: 0.3, ease: "power2.in"
+      });
+    } else {
+      setIsModalOpen(false);
+      setSelectedStatement(null);
+    }
+  };
+
+  // View statement details
+  const viewStatement = (statement: ClientStatement) => {
+    setSelectedStatement(statement);
+    setIsModalOpen(true);
+  };
+
+  // Send statement
+  const sendStatement = async () => {
+    if (!selectedStatement) return;
+
+    setIsSending(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      toast({
+        title: 'Statement Sent',
+        description: `Statement has been sent to ${selectedStatement.client.name}`,
+      });
+
+      // Update statement status
+      const updatedStatements = statements.map(s =>
+        s.id === selectedStatement.id ? { ...s, status: 'sent' as const } : s
+      );
+
+      setStatements(updatedStatements);
+      closeModal();
+    } catch (error) {
+      console.error('Error sending statement:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to send statement',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Generate PDF statement
+  const generatePdf = () => {
+    if (!selectedStatement) return;
+
+    toast({
+      title: 'PDF Generated',
+      description: 'Statement PDF has been generated and is ready for download',
+    });
+
+    // In a real app, this would trigger a download
+    console.log('Generating PDF for statement', selectedStatement.id);
+  };
+
+  // Get status color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'partial': return 'bg-yellow-100 text-yellow-800';
+      case 'overdue': return 'bg-red-100 text-red-800';
+      case 'pending': return 'bg-blue-100 text-blue-800';
+      case 'sent': return 'bg-purple-100 text-purple-800';
+      case 'draft': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Calculate aging summary
+  const calculateAgingSummary = (statement: ClientStatement) => {
+    const summary = {
+      current: 0,
+      '1-30': 0,
+      '31-60': 0,
+      '61-90': 0,
+      '90+': 0,
+    };
+
+    statement.invoices.forEach(invoice => {
+      if (invoice.status !== 'paid') {
+        const dueAmount = invoice.amount - invoice.paid;
+        const days = calculateAging(invoice.dueDate);
+
+        if (days <= 0) summary.current += dueAmount;
+        else if (days <= 30) summary['1-30'] += dueAmount;
+        else if (days <= 60) summary['31-60'] += dueAmount;
+        else if (days <= 90) summary['61-90'] += dueAmount;
+        else summary['90+'] += dueAmount;
+      }
+    });
+
+    return summary;
+  };
