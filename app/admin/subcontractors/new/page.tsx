@@ -1,12 +1,11 @@
-"use client";
-
-import AdminLayout from '@/components/admin/AdminLayout';
+import { Metadata } from 'next';
 import SubcontractorForm from '@/components/admin/subcontractors/SubcontractorForm';
 
+export const metadata: Metadata = {
+  title: 'Add Subcontractor | Mvono Consultants Admin',
+  description: 'Add a new subcontractor to your system',
+};
+
 export default function NewSubcontractorPage() {
-  return (
-    <AdminLayout title="Add New Subcontractor">
-      <SubcontractorForm />
-    </AdminLayout>
-  );
+  return <SubcontractorForm />;
 }
