@@ -296,3 +296,78 @@ const ClientStatements = () => {
 
     loadStatements();
   }, [toast]);
+  
+  // Filter statements based on search term, status filter, and period filter
+  useEffect(() => {
+    const filterStatements = () => {
+      let filtered = statements;
+
+      // Apply tab filter
+      if (activeTab === 'draft') {
+        filtered = filtered.filter(s => s.status === 'draft');
+      } else if (activeTab === 'sent') {
+        filtered = filtered.filter(s => s.status === 'sent');
+      } else if (activeTab === 'overdue') {
+        filtered = filtered.filter(s => s.invoices.some(inv => inv.status === 'overdue'));
+      }
+
+      // Apply search filter
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(s =>
+          s.client.name.toLowerCase().includes(term) ||
+          s.client.email.toLowerCase().includes(term) ||
+          s.invoices.some(inv => inv.invoiceNumber.toLowerCase().includes(term))
+        );
+      }
+
+      // Apply status filter
+      if (statusFilter) {
+        if (statusFilter === 'allPaid') {
+          filtered = filtered.filter(s => s.totalDue === 0);
+        } else if (statusFilter === 'partiallyPaid') {
+          filtered = filtered.filter(s => s.totalDue > 0 && s.totalDue < s.closingBalance);
+        } else if (statusFilter === 'unpaid') {
+          filtered = filtered.filter(s => s.totalDue === s.closingBalance && s.totalDue > 0);
+        }
+      }
+
+      // Apply period filter
+      if (periodFilter) {
+        if (periodFilter === 'lastMonth') {
+          const lastMonth = new Date();
+          lastMonth.setMonth(lastMonth.getMonth() - 1);
+          filtered = filtered.filter(s => {
+            const statementMonth = new Date(s.statementPeriod.to).getMonth();
+            const statementYear = new Date(s.statementPeriod.to).getFullYear();
+            return statementMonth === lastMonth.getMonth() && statementYear === lastMonth.getFullYear();
+          });
+        } else if (periodFilter === 'lastQuarter') {
+          const threeMonthsAgo = new Date();
+          threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+          filtered = filtered.filter(s => new Date(s.statementPeriod.to) >= threeMonthsAgo);
+        }
+      }
+
+      setFilteredStatements(filtered);
+    };
+
+    filterStatements();
+  }, [searchTerm, statusFilter, periodFilter, statements, activeTab]);
+
+  // Animation for container
+  useEffect(() => {
+    if (!isLoading && containerRef.current) {
+      gsap.fromTo(
+        containerRef.current.children,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          stagger: 0.05,
+          duration: 0.4,
+          ease: "power2.out"
+        }
+      );
+    }
+  }, [isLoading, filteredStatements]);
