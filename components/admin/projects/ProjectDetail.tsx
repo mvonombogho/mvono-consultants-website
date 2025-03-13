@@ -146,3 +146,36 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
       );
     }
   }, [isLoading, project, activeTab]);
+  
+  // Modal animations
+  useEffect(() => {
+    if (isDeleteModalOpen && modalRef.current && modalBackdropRef.current) {
+      // Animate backdrop
+      gsap.fromTo(modalBackdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+      
+      // Animate modal
+      gsap.fromTo(modalRef.current,
+        { opacity: 0, y: 20, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.2)" }
+      );
+    }
+  }, [isDeleteModalOpen]);
+  
+  const closeDeleteModal = () => {
+    if (modalRef.current && modalBackdropRef.current) {
+      // Animate out
+      gsap.to(modalRef.current, {
+        opacity: 0, y: 20, scale: 0.95, duration: 0.3, ease: "power2.in",
+        onComplete: () => setIsDeleteModalOpen(false)
+      });
+      
+      gsap.to(modalBackdropRef.current, {
+        opacity: 0, duration: 0.3, ease: "power2.in"
+      });
+    } else {
+      setIsDeleteModalOpen(false);
+    }
+  };
