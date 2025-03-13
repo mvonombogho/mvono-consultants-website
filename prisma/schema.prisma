@@ -12,148 +12,124 @@ datasource db {
 
 // User model for authentication
 model User {
-  id          String    @id @default(cuid())
-  name        String
-  email       String    @unique
-  password    String
-  role        String    @default("user")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  password  String
+  role      String    @default("user") // admin, user
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 // Client model
 model Client {
-  id              String    @id @default(cuid())
+  id              String    @id @default(uuid())
   name            String
-  contactPerson   String?
   email           String?
   phone           String?
   address         String?
   kraPin          String?
   industry        String?
-  status          String    @default("active")
+  contactPerson   String?
+  contactPosition String?
+  notes           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  projects        Project[]
   invoices        Invoice[]
-  notes           Note[]
+  projects        Project[]
 }
 
 // Subcontractor model
 model Subcontractor {
-  id              String    @id @default(cuid())
-  name            String
-  contactPerson   String?
-  email           String?
-  phone           String?
-  specialty       String?
-  status          String    @default("active")
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  projects        Project[]
+  id            String    @id @default(uuid())
+  name          String
+  email         String?
+  phone         String?
+  address       String?
+  kraPin        String?
+  specialty     String?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  projects      Project[] @relation("ProjectSubcontractors")
 }
 
 // Project model
 model Project {
-  id              String        @id @default(cuid())
+  id              String          @id @default(uuid())
   title           String
   description     String?
   startDate       DateTime?
   endDate         DateTime?
-  status          String        @default("planned")
-  completion      Int           @default(0)
-  value           Float?
+  status          String          // active, completed, cancelled, on-hold
   clientId        String
-  client          Client        @relation(fields: [clientId], references: [id])
-  subcontractorId String?
-  subcontractor   Subcontractor? @relation(fields: [subcontractorId], references: [id])
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  client          Client          @relation(fields: [clientId], references: [id])
+  subcontractors  Subcontractor[] @relation("ProjectSubcontractors")
+  totalValue      Float?
   invoices        Invoice[]
-  tasks           Task[]
-  notes           Note[]
-}
-
-// Task model
-model Task {
-  id              String    @id @default(cuid())
-  title           String
-  description     String?
-  status          String    @default("pending")
-  priority        String    @default("medium")
-  dueDate         DateTime?
-  assignedTo      String?
-  projectId       String
-  project         Project   @relation(fields: [projectId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
 
 // Invoice model
 model Invoice {
-  id              String    @id @default(cuid())
+  id              String    @id @default(uuid())
   invoiceNumber   String    @unique
-  amount          Float
-  tax             Float?
-  status          String    @default("pending") // pending, paid, overdue, etc.
-  issueDate       DateTime  @default(now())
+  description     String?
+  issueDate       DateTime
   dueDate         DateTime
-  paidDate        DateTime?
   clientId        String
   client          Client    @relation(fields: [clientId], references: [id])
   projectId       String?
   project         Project?  @relation(fields: [projectId], references: [id])
+  lpoReference    String?
+  items           InvoiceItem[]
+  subtotal        Float
+  taxAmount       Float
+  totalAmount     Float
+  status          String    // draft, sent, paid, partial, overdue, cancelled
+  notes           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  items           InvoiceItem[]
+  payments        Payment[]
 }
 
-// Invoice Item model
+// Invoice item model
 model InvoiceItem {
-  id              String    @id @default(cuid())
-  description     String
-  quantity        Float
-  unitPrice       Float
-  amount          Float
-  invoiceId       String
-  invoice         Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Float
+  unitPrice   Float
+  taxRate     Float    @default(0)
+  amount      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Payment model
+model Payment {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  amount      Float
+  paymentDate DateTime
+  method      String   // bank transfer, cash, cheque, mpesa
+  reference   String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // Service model
 model Service {
-  id              String    @id @default(cuid())
-  name            String
-  description     String?
-  standardPrice   Float?
-  category        String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-}
-
-// Note model (for clients and projects)
-model Note {
-  id              String    @id @default(cuid())
-  content         String
-  clientId        String?
-  client          Client?   @relation(fields: [clientId], references: [id])
-  projectId       String?
-  project         Project?  @relation(fields: [projectId], references: [id])
-  createdBy       String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-}
-
-// Expense model
-model Expense {
-  id              String    @id @default(cuid())
-  description     String
-  amount          Float
-  date            DateTime
-  category        String?
-  receipt         String?   // URL or path to receipt image
-  projectId       String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String
+  price       Float?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

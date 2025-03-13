@@ -1,92 +1,112 @@
-# Mvono Consultants Website & Management System
+# Mvono Consultants Website
 
-A modern website and comprehensive management system for Mvono Consultants, a safety, energy, and plant management consultancy firm based in Kenya.
+A modern, responsive website and management system for Mvono Consultants, a Kenyan consultancy firm specializing in safety, energy, and plant systems management.
+
+## Project Overview
+
+This project consists of two main components:
+
+1. **Public Website**: A GigaCloud-inspired design with modern aesthetics, smooth animations, and comprehensive information about Mvono Consultants' services.
+
+2. **Administrative Dashboard**: A complete management system for handling clients, finances, documents, and business operations.
+
+## Implementation Phases
+
+This project is being implemented in phases:
+
+### Phase 1: Foundation & Public Website
+- Modern responsive website with animations
+- Core authentication system
+- Basic admin dashboard
+
+### Phase 2: Client & Financial Management
+- Client database and management system
+- Financial tracking and reporting
+- Document generation (invoices, quotations, etc.)
+
+### Phase 3: Business Operations Enhancement
+- Client statements & financial features
+- Subcontractor management
+- Project management
+- Service catalog
+
+### Phase 4 and beyond
+- Analytics & reporting
+- Sales & marketing tools
+- Additional specialized features
+
+## Technologies Used
+
+- **Frontend**: Next.js, React, TailwindCSS, GSAP for animations
+- **Backend**: Next.js API routes
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth
+- **Deployment**: Vercel/Netlify
 
 ## Features
 
-- Modern responsive design inspired by GigaCloud with smooth animations using GSAP
-- Authentication system with Next-Auth
-- Administrative dashboard for complete business management
-- Client and subcontractor management
-- Financial tracking and document generation
-- Sales and marketing management
-- Project management and service catalog
-- Advanced analytics and reporting
+### Public Website
+- Responsive design for all devices
+- Animated sections with GSAP
+- Service pages with detailed information
+- Contact form with validation
+- Client testimonials and showcase
 
-## Technology Stack
-
-- Next.js with TypeScript
-- Tailwind CSS for styling
-- GSAP for animations
-- Next-Auth for authentication
-- Prisma ORM for database management (coming soon)
+### Administrative Dashboard
+- Secure authentication
+- Client management system
+- Financial tracking and reporting
+- Document generation (invoices, quotations, etc.)
+- Project management
+- And more based on implementation phase
 
 ## Getting Started
 
 ### Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
+- Node.js (v18 or newer)
+- PostgreSQL database
 
 ### Installation
 
-1. Clone this repository:
+1. Clone the repository
    ```bash
    git clone https://github.com/mvonombogho/mvono-consultants-website.git
    cd mvono-consultants-website
    ```
 
-2. Install dependencies:
+2. Install dependencies
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
-3. Create a `.env.local` file in the root directory with the following variables:
+3. Set up environment variables
+   Create a `.env` file in the root directory with the following variables:
    ```
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your-secret-key
+   DATABASE_URL="postgresql://username:password@localhost:5432/mvono_db"
+   NEXTAUTH_SECRET="your-secret-key-here"
+   NEXTAUTH_URL="http://localhost:3000"
    ```
 
-4. Run the development server:
+4. Initialize the database
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+
+5. Run the development server
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the website.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-### Authentication
+## Contributing
 
-For testing purposes, use the following credentials:
-
-- Email: admin@mvonoconsultants.com
-- Password: password123
-
-## Project Implementation Phases
-
-The project is being implemented in phases:
-
-1. **Phase 1: Foundation & Public Website** (Current)
-   - Modern public website with animations
-   - Core authentication
-   - Basic admin dashboard
-
-2. **Phase 2: Client & Financial Management** (Upcoming)
-   - Client management system
-   - Financial management basics
-   - Document generation system
-
-3. **Phase 3-8: Additional Features** (Future)
-   - Business operations enhancement
-   - Analytics & reporting
-   - Sales & marketing
-   - Advanced marketing & integration
-   - Industry-specific features
-   - Training & deployment
+This project is being developed according to the phased implementation plan. Please refer to the current phase of development before making contributions.
 
 ## License
 
-This project is proprietary and confidential. Unauthorized copying, modification, distribution, or use is strictly prohibited.
+This project is proprietary and not open for public use without permission.
+
+## Contact
+
+For any inquiries regarding this project, please contact Mvono Consultants at sales@mvonoconsultants.com.
