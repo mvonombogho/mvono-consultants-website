@@ -514,3 +514,113 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
                   </div>
                 </div>
               </div>
+              
+              {/* Subcontractors */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Subcontractors</h3>
+                
+                {project.subcontractors.length > 0 ? (
+                  <div className="space-y-3">
+                    {project.subcontractors.map(subcontractor => (
+                      <div key={subcontractor.id} className="flex items-center">
+                        <div className="flex-shrink-0 h-9 w-9 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                          <Users className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <Link 
+                            href={`/admin/subcontractors/${subcontractor.id}`}
+                            className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                          >
+                            {subcontractor.name}
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm">No subcontractors assigned to this project.</p>
+                )}
+                
+                <button 
+                  className="mt-4 text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                  onClick={() => alert('Assign subcontractor functionality would go here')}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  <span>Assign Subcontractor</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {activeTab === 'tasks' && (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-medium text-gray-900">Project Tasks</h3>
+              <button 
+                className="px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1"
+                onClick={() => alert('Add task functionality would go here')}
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Task</span>
+              </button>
+            </div>
+            
+            {project.tasks.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {project.tasks.map(task => (
+                      <tr key={task.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="font-medium text-gray-900">{task.title}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTaskStatusInfo(task.status).color}`}>
+                            {getTaskStatusInfo(task.status).icon}
+                            {task.status === 'in_progress' ? 'In Progress' : 
+                              task.status.charAt(0).toUpperCase() + task.status.slice(1)
+                            }
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                          {task.dueDate ? formatDate(task.dueDate) : '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                          {task.assignedTo || 'Unassigned'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                          <button 
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                            onClick={() => alert(`Edit task ${task.id}`)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="text-red-600 hover:text-red-900"
+                            onClick={() => alert(`Delete task ${task.id}`)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="p-6 text-center">
+                <p className="text-gray-500">No tasks have been added to this project yet.</p>
+              </div>
+            )}
+          </div>
+        )}
