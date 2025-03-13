@@ -431,3 +431,86 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
             </div>
           </div>
         </div>
+        
+        {/* Tabs */}
+        <div className="flex border-t border-gray-200" ref={tabsRef}>
+          <button 
+            className={`px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'overview' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            Overview
+          </button>
+          <button 
+            className={`px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'tasks' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('tasks')}
+          >
+            Tasks
+          </button>
+          <button 
+            className={`px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'invoices' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+            onClick={() => setActiveTab('invoices')}
+          >
+            Invoices
+          </button>
+        </div>
+      </div>
+      
+      {/* Tab Content */}
+      <div ref={contentRef}>
+        {activeTab === 'overview' && (
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Main Info */}
+            <div className="md:col-span-2 space-y-6">
+              {/* Project Description */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Description</h3>
+                <p className="text-gray-600 whitespace-pre-line">{project.description || 'No description provided.'}</p>
+              </div>
+              
+              {/* Project Notes */}
+              {project.notes && (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Notes</h3>
+                  <p className="text-gray-600 whitespace-pre-line">{project.notes}</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Project Stats */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Project Statistics</h3>
+                
+                <div className="space-y-4">
+                  {/* Tasks */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm text-gray-500">Tasks Completion</span>
+                      <span className="text-sm font-medium">{completedTasks}/{totalTasks}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="h-2 rounded-full bg-green-600"
+                        style={{ width: `${taskCompletionPercentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  {/* Invoices */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm text-gray-500">Invoiced Amount</span>
+                      <span className="text-sm font-medium">{formatCurrency(totalInvoiced)}</span>
+                    </div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm text-gray-500">Paid Amount</span>
+                      <span className="text-sm font-medium">{formatCurrency(totalPaid)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">Outstanding</span>
+                      <span className="text-sm font-medium text-red-600">{formatCurrency(outstandingAmount)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
