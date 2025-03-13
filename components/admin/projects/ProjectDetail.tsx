@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { gsap } from 'gsap';
 import {
   Briefcase,
   Calendar,
@@ -17,7 +18,10 @@ import {
   PauseCircle,
   AlertCircle,
   ListTodo,
-  Plus
+  Plus,
+  X,
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 
 // Types
@@ -64,6 +68,15 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
   const [project, setProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Refs for GSAP animations
+  const headerRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const modalBackdropRef = useRef<HTMLDivElement>(null);
   
   // Load project data
   useEffect(() => {
@@ -110,6 +123,62 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
     
     loadProject();
   }, [id]);
+  
+  // GSAP animations
+  useEffect(() => {
+    if (!isLoading && project && headerRef.current && tabsRef.current && contentRef.current) {
+      // Animate header
+      gsap.fromTo(headerRef.current, 
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
+      );
+      
+      // Animate tabs
+      gsap.fromTo(tabsRef.current,
+        { opacity: 0, y: -10 },
+        { opacity: 1, y: 0, duration: 0.4, delay: 0.2, ease: "power2.out" }
+      );
+      
+      // Animate content
+      gsap.fromTo(contentRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, delay: 0.3, ease: "power2.out" }
+      );
+    }
+  }, [isLoading, project, activeTab]);
+  
+  // Modal animations
+  useEffect(() => {
+    if (isDeleteModalOpen && modalRef.current && modalBackdropRef.current) {
+      // Animate backdrop
+      gsap.fromTo(modalBackdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+      
+      // Animate modal
+      gsap.fromTo(modalRef.current,
+        { opacity: 0, y: 20, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.2)" }
+      );
+    }
+  }, [isDeleteModalOpen]);
+  
+  const closeDeleteModal = () => {
+    if (modalRef.current && modalBackdropRef.current) {
+      // Animate out
+      gsap.to(modalRef.current, {
+        opacity: 0, y: 20, scale: 0.95, duration: 0.3, ease: "power2.in",
+        onComplete: () => setIsDeleteModalOpen(false)
+      });
+      
+      gsap.to(modalBackdropRef.current, {
+        opacity: 0, duration: 0.3, ease: "power2.in"
+      });
+    } else {
+      setIsDeleteModalOpen(false);
+    }
+  };
   
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -206,14 +275,31 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
   // Handle project deletion
   const handleDeleteProject = async () => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsDeleting(true);
+      setError(null);
       
-      // Navigate back to projects list
-      router.push('/admin/projects');
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Successful deletion animation
+      if (contentRef.current) {
+        gsap.to(contentRef.current, {
+          opacity: 0, 
+          y: 30, 
+          duration: 0.5,
+          ease: "power2.in",
+          onComplete: () => {
+            // Navigate back to projects list
+            router.push('/admin/projects');
+          }
+        });
+      } else {
+        router.push('/admin/projects');
+      }
     } catch (error) {
       console.error('Error deleting project:', error);
-      setIsDeleteModalOpen(false);
+      setError('Failed to delete project. Please try again later.');
+      setIsDeleting(false);
     }
   };
   
@@ -270,7 +356,7 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
   return (
     <div className="space-y-6">
       {/* Project Header */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-hidden" ref={headerRef}>
         <div className="p-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
@@ -298,170 +384,3 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
               </button>
             </div>
           </div>
-          
-          <div className="flex flex-wrap gap-4 mt-6">
-            {/* Status */}
-            <div className="flex items-center gap-1">
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusInfo(project.status).color}`}>
-                {getStatusInfo(project.status).icon}
-                <span>{project.status.charAt(0).toUpperCase() + project.status.slice(1)}</span>
-              </div>
-            </div>
-            
-            {/* Project Value */}
-            <div className="flex items-center gap-1 text-sm text-gray-500">
-              <DollarSign className="h-4 w-4" />
-              <span>{formatCurrency(project.totalValue)}</span>
-            </div>
-            
-            {/* Date */}
-            <div className="flex items-center gap-1 text-sm text-gray-500">
-              <Calendar className="h-4 w-4" />
-              <span>
-                {formatDate(project.startDate)} {project.endDate ? ` to ${formatDate(project.endDate)}` : ' (ongoing)'}
-              </span>
-            </div>
-            
-            {/* Subcontractors */}
-            {project.subcontractors.length > 0 && (
-              <div className="flex items-center gap-1 text-sm text-gray-500">
-                <Users className="h-4 w-4" />
-                <span>{project.subcontractors.length} Subcontractor{project.subcontractors.length !== 1 ? 's' : ''}</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Completion Progress */}
-          <div className="mt-6">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">Project Completion</span>
-              <span className="text-sm font-medium text-gray-700">{project.completionPercentage}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div 
-                className={`h-2.5 rounded-full ${project.status === 'active' ? 'bg-blue-600' : project.status === 'completed' ? 'bg-green-600' : 'bg-yellow-600'}`}
-                style={{ width: `${project.completionPercentage}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Tabs */}
-        <div className="flex border-t border-gray-200">
-          <button 
-            className={`px-4 py-3 text-sm font-medium ${activeTab === 'overview' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-            onClick={() => setActiveTab('overview')}
-          >
-            Overview
-          </button>
-          <button 
-            className={`px-4 py-3 text-sm font-medium ${activeTab === 'tasks' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-            onClick={() => setActiveTab('tasks')}
-          >
-            Tasks
-          </button>
-          <button 
-            className={`px-4 py-3 text-sm font-medium ${activeTab === 'invoices' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-            onClick={() => setActiveTab('invoices')}
-          >
-            Invoices
-          </button>
-        </div>
-      </div>
-      
-      {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Main Info */}
-          <div className="md:col-span-2 space-y-6">
-            {/* Project Description */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Description</h3>
-              <p className="text-gray-600 whitespace-pre-line">{project.description || 'No description provided.'}</p>
-            </div>
-            
-            {/* Project Notes */}
-            {project.notes && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Notes</h3>
-                <p className="text-gray-600 whitespace-pre-line">{project.notes}</p>
-              </div>
-            )}
-          </div>
-          
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Project Stats */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Project Statistics</h3>
-              
-              <div className="space-y-4">
-                {/* Tasks */}
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-500">Tasks Completion</span>
-                    <span className="text-sm font-medium">{completedTasks}/{totalTasks}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="h-2 rounded-full bg-green-600"
-                      style={{ width: `${taskCompletionPercentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                {/* Invoices */}
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-500">Invoiced Amount</span>
-                    <span className="text-sm font-medium">{formatCurrency(totalInvoiced)}</span>
-                  </div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-500">Paid Amount</span>
-                    <span className="text-sm font-medium">{formatCurrency(totalPaid)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">Outstanding</span>
-                    <span className="text-sm font-medium">{formatCurrency(outstandingAmount)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Subcontractors */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Subcontractors</h3>
-              
-              {project.subcontractors.length > 0 ? (
-                <div className="space-y-3">
-                  {project.subcontractors.map(subcontractor => (
-                    <div key={subcontractor.id} className="flex items-center">
-                      <div className="flex-shrink-0 h-9 w-9 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                        <Users className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <Link 
-                          href={`/admin/subcontractors/${subcontractor.id}`}
-                          className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
-                        >
-                          {subcontractor.name}
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-sm">No subcontractors assigned to this project.</p>
-              )}
-              
-              <button 
-                className="mt-4 text-sm text-blue-600 hover:text-blue-800 flex items-center"
-                onClick={() => alert('Assign subcontractor functionality would go here')}
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                <span>Assign Subcontractor</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
