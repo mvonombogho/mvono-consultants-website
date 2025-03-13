@@ -77,3 +77,105 @@ export default function ProjectDetail({ id }: ProjectDetailProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const modalBackdropRef = useRef<HTMLDivElement>(null);
+  
+  // Load project data
+  useEffect(() => {
+    const loadProject = async () => {
+      try {
+        // Simulate API call
+        setTimeout(() => {
+          // Mock project data
+          setProject({
+            id,
+            title: 'Environmental Impact Assessment',
+            description: 'Comprehensive assessment of environmental impact for the new manufacturing facility at Tata Chemicals. This includes soil testing, air quality analysis, water impact assessment, and biodiversity impact study.',
+            clientId: '102',
+            clientName: 'Tata Chemicals',
+            startDate: '2023-06-01',
+            endDate: null,
+            status: 'active',
+            totalValue: 380000,
+            completionPercentage: 65,
+            notes: 'Client requested additional soil testing. Extended timeline approved by management. The project is currently ahead of schedule.',
+            subcontractors: [
+              { id: '202', name: 'EcoSystems Consultants' },
+              { id: '203', name: 'GreenTech Analysis' },
+            ],
+            tasks: [
+              { id: '301', title: 'Initial site assessment', status: 'completed', dueDate: '2023-06-10', assignedTo: 'John Doe' },
+              { id: '302', title: 'Soil sample collection', status: 'completed', dueDate: '2023-06-20', assignedTo: 'Jane Smith' },
+              { id: '303', title: 'Water quality analysis', status: 'in_progress', dueDate: '2023-07-05', assignedTo: 'John Doe' },
+              { id: '304', title: 'Air quality assessment', status: 'todo', dueDate: '2023-07-15', assignedTo: null },
+              { id: '305', title: 'Final report preparation', status: 'todo', dueDate: '2023-07-30', assignedTo: null },
+            ],
+            invoices: [
+              { id: '401', invoiceNumber: 'INV-2023-042', date: '2023-06-05', amount: 150000, status: 'paid' },
+              { id: '402', invoiceNumber: 'INV-2023-067', date: '2023-07-01', amount: 120000, status: 'sent' },
+            ],
+          });
+          setIsLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error('Error loading project:', error);
+        setIsLoading(false);
+      }
+    };
+    
+    loadProject();
+  }, [id]);
+  
+  // GSAP animations
+  useEffect(() => {
+    if (!isLoading && project && headerRef.current && tabsRef.current && contentRef.current) {
+      // Animate header
+      gsap.fromTo(headerRef.current, 
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }
+      );
+      
+      // Animate tabs
+      gsap.fromTo(tabsRef.current,
+        { opacity: 0, y: -10 },
+        { opacity: 1, y: 0, duration: 0.4, delay: 0.2, ease: "power2.out" }
+      );
+      
+      // Animate content
+      gsap.fromTo(contentRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, delay: 0.3, ease: "power2.out" }
+      );
+    }
+  }, [isLoading, project, activeTab]);
+  
+  // Modal animations
+  useEffect(() => {
+    if (isDeleteModalOpen && modalRef.current && modalBackdropRef.current) {
+      // Animate backdrop
+      gsap.fromTo(modalBackdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+      
+      // Animate modal
+      gsap.fromTo(modalRef.current,
+        { opacity: 0, y: 20, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.2)" }
+      );
+    }
+  }, [isDeleteModalOpen]);
+  
+  const closeDeleteModal = () => {
+    if (modalRef.current && modalBackdropRef.current) {
+      // Animate out
+      gsap.to(modalRef.current, {
+        opacity: 0, y: 20, scale: 0.95, duration: 0.3, ease: "power2.in",
+        onComplete: () => setIsDeleteModalOpen(false)
+      });
+      
+      gsap.to(modalBackdropRef.current, {
+        opacity: 0, duration: 0.3, ease: "power2.in"
+      });
+    } else {
+      setIsDeleteModalOpen(false);
+    }
+  };
