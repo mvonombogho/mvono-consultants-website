@@ -1,12 +1,15 @@
 "use client";
 
+import { Suspense } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import ServiceForm from '@/components/admin/services/ServiceForm';
 
 export default function NewServicePage() {
   return (
     <AdminLayout title="Add New Service">
-      <ServiceForm />
+      <Suspense fallback={<div>Loading form...</div>}>
+        <ServiceForm />
+      </Suspense>
     </AdminLayout>
   );
 }

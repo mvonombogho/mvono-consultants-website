@@ -2,15 +2,19 @@
 
 import { Suspense } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import ServiceDetail from '@/components/admin/services/ServiceDetail';
+import ServiceForm from '@/components/admin/services/ServiceForm';
 
-export default function ServiceDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-  
+interface ServicePageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function ServicePage({ params }: ServicePageProps) {
   return (
-    <AdminLayout title="Service Details">
-      <Suspense fallback={<div>Loading service details...</div>}>
-        <ServiceDetail id={id} />
+    <AdminLayout title="Edit Service">
+      <Suspense fallback={<div>Loading service data...</div>}>
+        <ServiceForm serviceId={params.id} />
       </Suspense>
     </AdminLayout>
   );
