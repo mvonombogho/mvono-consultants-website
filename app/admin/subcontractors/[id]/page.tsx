@@ -1,17 +1,17 @@
-"use client";
-
-import { Suspense } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
+import { Metadata } from 'next';
 import SubcontractorDetail from '@/components/admin/subcontractors/SubcontractorDetail';
 
-export default function SubcontractorDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-  
-  return (
-    <AdminLayout title="Subcontractor Details">
-      <Suspense fallback={<div>Loading subcontractor details...</div>}>
-        <SubcontractorDetail id={id} />
-      </Suspense>
-    </AdminLayout>
-  );
+export const metadata: Metadata = {
+  title: 'Subcontractor Details | Mvono Consultants Admin',
+  description: 'View and manage details for a specific subcontractor',
+};
+
+interface SubcontractorPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function SubcontractorPage({ params }: SubcontractorPageProps) {
+  return <SubcontractorDetail id={params.id} />;
 }
