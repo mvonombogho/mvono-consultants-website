@@ -98,3 +98,79 @@ const PIPELINE_STAGES = {
   WON: { label: 'Won', color: 'bg-green-500', icon: CheckCircle },
   LOST: { label: 'Lost', color: 'bg-red-500', icon: XCircle },
 };
+
+const SalesPipeline = () => {
+  const [opportunities, setOpportunities] = useState(SAMPLE_OPPORTUNITIES);
+  const [filteredOpportunities, setFilteredOpportunities] = useState(SAMPLE_OPPORTUNITIES);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stageFilter, setStageFilter] = useState('ALL');
+  const [isAddOpportunityOpen, setIsAddOpportunityOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [newOpportunity, setNewOpportunity] = useState({
+    name: '',
+    client: '',
+    value: '',
+    stage: 'DISCOVERY',
+    probability: 20,
+    expectedCloseDate: '',
+    assignedTo: 'Donald Mbogho',
+    notes: '',
+    tags: []
+  });
+  const [newActivity, setNewActivity] = useState('');
+  
+  // For animation
+  const stageRefs = {
+    DISCOVERY: React.useRef(null),
+    QUALIFICATION: React.useRef(null),
+    PROPOSAL: React.useRef(null),
+    NEGOTIATION: React.useRef(null),
+    WON: React.useRef(null),
+    LOST: React.useRef(null),
+  };
+  const detailsRef = React.useRef(null);
+  const formRef = React.useRef(null);
+  const summaryRef = React.useRef(null);
+  
+  // This state holds the activity for the selected opportunity
+  const [activities, setActivities] = useState([
+    {
+      id: 1,
+      opportunityId: 1,
+      date: "2025-03-10",
+      type: "NOTE",
+      content: "Sent proposal draft for review",
+      user: "Donald Mbogho"
+    },
+    {
+      id: 2,
+      opportunityId: 1,
+      date: "2025-03-08",
+      type: "STAGE_CHANGE",
+      content: "Moved from Discovery to Proposal",
+      user: "Donald Mbogho"
+    },
+    {
+      id: 3,
+      opportunityId: 1,
+      date: "2025-03-02",
+      type: "CREATED",
+      content: "Opportunity created",
+      user: "Donald Mbogho"
+    }
+  ]);
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 h-full overflow-hidden flex flex-col">
+      {/* Header with component title and actions */}
+      {/* Pipeline metrics summary section */}
+      {/* Search filters and stage selectors */}
+      {/* Kanban board to show opportunities by stage */}
+      {/* Opportunity details sidebar */}
+      {/* Add opportunity modal */}
+    </div>
+  );
+};
+
+export default SalesPipeline;
