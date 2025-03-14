@@ -308,7 +308,7 @@ export const ClientStatements = () => {
 
           {/* Duplicate the TabsContent to show the same filtered data for other tabs */}
           <TabsContent value="draft" className="mt-0">
-            <div className="space-y-4">
+            <div ref={containerRef} className="space-y-4">
               {/* Same content structure as 'all' tab */}
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-16">
@@ -342,7 +342,7 @@ export const ClientStatements = () => {
           </TabsContent>
           
           <TabsContent value="sent" className="mt-0">
-            <div className="space-y-4">
+            <div ref={containerRef} className="space-y-4">
               {/* Same content structure as other tabs */}
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-16">
@@ -370,7 +370,7 @@ export const ClientStatements = () => {
           </TabsContent>
           
           <TabsContent value="overdue" className="mt-0">
-            <div className="space-y-4">
+            <div ref={containerRef} className="space-y-4">
               {/* Same content structure as other tabs */}
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-16">
