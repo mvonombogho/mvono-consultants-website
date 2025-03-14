@@ -160,3 +160,125 @@ const SalesPipeline = () => {
       user: "Donald Mbogho"
     }
   ]);
+
+  useEffect(() => {
+    // Animate in the pipeline stages and summary
+    gsap.fromTo(
+      Object.values(stageRefs).map(ref => ref.current),
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, stagger: 0.1, duration: 0.6, ease: 'power2.out' }
+    );
+
+    gsap.fromTo(
+      summaryRef.current,
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.4 }
+    );
+  }, []);
+
+  useEffect(() => {
+    // Filter opportunities based on search term and stage filter
+    let results = opportunities;
+    
+    if (searchTerm) {
+      results = results.filter(opp => 
+        opp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.notes.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (stageFilter !== 'ALL') {
+      results = results.filter(opp => opp.stage === stageFilter);
+    }
+    
+    setFilteredOpportunities(results);
+  }, [searchTerm, stageFilter, opportunities]);
+
+  const handleOpenDetail = (opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setIsDetailOpen(true);
+    
+    // Animate in the details panel
+    gsap.fromTo(
+      detailsRef.current,
+      { x: 300, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+    );
+  };
+
+  const handleCloseDetail = () => {
+    gsap.to(detailsRef.current, {
+      x: 300, 
+      opacity: 0, 
+      duration: 0.3, 
+      ease: 'power2.in',
+      onComplete: () => setIsDetailOpen(false)
+    });
+  };
+
+  const handleOpenAddOpportunity = () => {
+    setIsAddOpportunityOpen(true);
+    
+    // Animate in the form
+    gsap.fromTo(
+      formRef.current,
+      { y: -50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+    );
+  };
+
+  const handleCloseAddOpportunity = () => {
+    gsap.to(formRef.current, {
+      y: -50, 
+      opacity: 0, 
+      duration: 0.3, 
+      ease: 'power2.in',
+      onComplete: () => setIsAddOpportunityOpen(false)
+    });
+  };
+
+  const handleAddOpportunity = (e) => {
+    e.preventDefault();
+    
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    const newOpportunityWithDetails = {
+      ...newOpportunity,
+      id: opportunities.length + 1,
+      value: parseFloat(newOpportunity.value) || 0,
+      lastActivity: "Created opportunity",
+      lastActivityDate: currentDate,
+      createdAt: currentDate,
+      tags: newOpportunity.tags.length ? newOpportunity.tags : [`${newOpportunity.stage}`]
+    };
+    
+    setOpportunities([newOpportunityWithDetails, ...opportunities]);
+    
+    // Add an activity log for the new opportunity
+    const newActivity = {
+      id: activities.length + 1,
+      opportunityId: newOpportunityWithDetails.id,
+      date: currentDate,
+      type: "CREATED",
+      content: "Opportunity created",
+      user: "Donald Mbogho"
+    };
+    
+    setActivities([newActivity, ...activities]);
+    
+    // Reset form
+    setNewOpportunity({
+      name: '',
+      client: '',
+      value: '',
+      stage: 'DISCOVERY',
+      probability: 20,
+      expectedCloseDate: '',
+      assignedTo: 'Donald Mbogho',
+      notes: '',
+      tags: []
+    });
+    
+    handleCloseAddOpportunity();
+  };
