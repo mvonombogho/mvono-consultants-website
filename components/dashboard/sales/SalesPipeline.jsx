@@ -88,3 +88,75 @@ const SAMPLE_OPPORTUNITIES = [
     createdAt: "2025-02-10"
   },
 ];
+
+// Pipeline stages with their properties
+const PIPELINE_STAGES = {
+  DISCOVERY: { label: 'Discovery', color: 'bg-blue-500', icon: Search },
+  QUALIFICATION: { label: 'Qualification', color: 'bg-indigo-500', icon: Target },
+  PROPOSAL: { label: 'Proposal', color: 'bg-yellow-500', icon: Edit },
+  NEGOTIATION: { label: 'Negotiation', color: 'bg-orange-500', icon: Clock },
+  WON: { label: 'Won', color: 'bg-green-500', icon: CheckCircle },
+  LOST: { label: 'Lost', color: 'bg-red-500', icon: XCircle },
+};
+
+const SalesPipeline = () => {
+  const [opportunities, setOpportunities] = useState(SAMPLE_OPPORTUNITIES);
+  const [filteredOpportunities, setFilteredOpportunities] = useState(SAMPLE_OPPORTUNITIES);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [stageFilter, setStageFilter] = useState('ALL');
+  const [isAddOpportunityOpen, setIsAddOpportunityOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [newOpportunity, setNewOpportunity] = useState({
+    name: '',
+    client: '',
+    value: '',
+    stage: 'DISCOVERY',
+    probability: 20,
+    expectedCloseDate: '',
+    assignedTo: 'Donald Mbogho',
+    notes: '',
+    tags: []
+  });
+  const [newActivity, setNewActivity] = useState('');
+  
+  // For animation
+  const stageRefs = {
+    DISCOVERY: React.useRef(null),
+    QUALIFICATION: React.useRef(null),
+    PROPOSAL: React.useRef(null),
+    NEGOTIATION: React.useRef(null),
+    WON: React.useRef(null),
+    LOST: React.useRef(null),
+  };
+  const detailsRef = React.useRef(null);
+  const formRef = React.useRef(null);
+  const summaryRef = React.useRef(null);
+  
+  // This state holds the activity for the selected opportunity
+  const [activities, setActivities] = useState([
+    {
+      id: 1,
+      opportunityId: 1,
+      date: "2025-03-10",
+      type: "NOTE",
+      content: "Sent proposal draft for review",
+      user: "Donald Mbogho"
+    },
+    {
+      id: 2,
+      opportunityId: 1,
+      date: "2025-03-08",
+      type: "STAGE_CHANGE",
+      content: "Moved from Discovery to Proposal",
+      user: "Donald Mbogho"
+    },
+    {
+      id: 3,
+      opportunityId: 1,
+      date: "2025-03-02",
+      type: "CREATED",
+      content: "Opportunity created",
+      user: "Donald Mbogho"
+    }
+  ]);
