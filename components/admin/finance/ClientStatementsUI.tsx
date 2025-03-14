@@ -193,3 +193,92 @@ export const ClientStatementsUI = ({
 
   return (
     <div className="w-full space-y-6 animate-fadeIn">
+      {/* Page Header with Animation */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 relative overflow-hidden">
+        <div className="z-10">
+          <h1 className="text-2xl font-bold tracking-tight relative">
+            Client Statements
+            <span className="absolute -bottom-1 left-0 w-12 h-1 bg-primary rounded-full"></span>
+          </h1>
+          <p className="text-muted-foreground mt-3">
+            Manage and generate statements for your clients
+          </p>
+        </div>
+        <div className="flex items-center gap-2 z-10">
+          <Button
+            onClick={() => router.push("/admin/finance/create-statement")}
+            className="bg-primary hover:bg-primary/90 text-white transition-all relative overflow-hidden group"
+          >
+            <span className="relative z-10 flex items-center">
+              <FileText className="mr-2 h-4 w-4" />
+              New Statement
+            </span>
+            <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+          </Button>
+        </div>
+        {/* Background gradient effect */}
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full filter blur-3xl opacity-50"></div>
+      </div>
+
+      {/* Tabs & Search Bar */}
+      <div className="space-y-4">
+        <Tabs
+          defaultValue="all"
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+            <TabsList className="bg-muted/60">
+              <TabsTrigger
+                value="all"
+                className="relative overflow-hidden transition-all group"
+              >
+                <span className="relative z-10">All Statements</span>
+                <div className="absolute inset-0 bg-primary/5 translate-y-full group-data-[state=active]:translate-y-0 transition-transform duration-300"></div>
+              </TabsTrigger>
+              <TabsTrigger
+                value="draft"
+                className="relative overflow-hidden transition-all group"
+              >
+                <span className="relative z-10">Drafts</span>
+                <div className="absolute inset-0 bg-primary/5 translate-y-full group-data-[state=active]:translate-y-0 transition-transform duration-300"></div>
+              </TabsTrigger>
+              <TabsTrigger
+                value="sent"
+                className="relative overflow-hidden transition-all group"
+              >
+                <span className="relative z-10">Sent</span>
+                <div className="absolute inset-0 bg-primary/5 translate-y-full group-data-[state=active]:translate-y-0 transition-transform duration-300"></div>
+              </TabsTrigger>
+              <TabsTrigger
+                value="overdue"
+                className="relative overflow-hidden transition-all group"
+              >
+                <span className="relative z-10">With Overdue</span>
+                <div className="absolute inset-0 bg-primary/5 translate-y-full group-data-[state=active]:translate-y-0 transition-transform duration-300"></div>
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="flex items-center gap-2">
+              <div className="relative w-full sm:w-64 group">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
+                <Input
+                  type="search"
+                  placeholder="Search statements..."
+                  className="pl-8 bg-background pr-4 focus-visible:ring-primary/20 transition-all duration-200 border-muted-foreground/20 focus-visible:border-primary/30"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setShowFilters(!showFilters)}
+                className="border-muted-foreground/20 hover:bg-primary/5 hover:border-primary/30 transition-colors duration-200"
+              >
+                <Filter className="h-4 w-4" />
+                <span className="sr-only">Filter</span>
+              </Button>
+            </div>
+          </div>
