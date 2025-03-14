@@ -2,99 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 249, 249, 249;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-rgb: 26, 26, 26;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-}
-
-/* Custom scroll bar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #0ea5e9;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #0284c7;
-}
-
-/* Utility classes for animations */
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+    --color-primary: 0 87 184; /* #0057B8 */
+    --color-secondary: 238 49 36; /* #EE3124 */
+    --color-accent: 255 177 0; /* #FFB100 */
   }
   
-  .animate-slide-up {
-    animation: slideUp 0.5s ease-in-out;
+  html {
+    scroll-behavior: smooth;
   }
   
-  .animate-slide-down {
-    animation: slideDown 0.5s ease-in-out;
+  body {
+    @apply bg-white text-neutral-800 min-h-screen;
   }
 }
 
-/* GSAP-inspired animations */
-.reveal {
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 md:px-6 lg:px-8;
+  }
+  
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-md transition-colors duration-300;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary-dark text-white font-medium py-2 px-6 rounded-md transition-colors duration-300;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium py-2 px-6 rounded-md transition-colors duration-300;
+  }
+  
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-display font-bold leading-tight;
+  }
+  
+  .section-subtitle {
+    @apply text-xl md:text-2xl text-neutral-600 mt-4;
+  }
+}
+
+/* Animation classes */
+.fade-in {
   opacity: 0;
-  transition: all 0.8s ease;
+  animation: fadeIn 1s ease-in-out forwards;
 }
 
-.reveal.active {
-  opacity: 1;
-}
-
-.reveal-left {
-  transform: translateX(-50px);
+.slide-up {
   opacity: 0;
-  transition: all 0.8s ease;
+  transform: translateY(30px);
+  animation: slideUp 0.8s ease-out forwards;
 }
 
-.reveal-right {
-  transform: translateX(50px);
+.slide-right {
   opacity: 0;
-  transition: all 0.8s ease;
+  transform: translateX(-30px);
+  animation: slideRight 0.8s ease-out forwards;
 }
 
-.reveal-up {
-  transform: translateY(50px);
-  opacity: 0;
-  transition: all 0.8s ease;
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-.reveal-down {
-  transform: translateY(-50px);
-  opacity: 0;
-  transition: all 0.8s ease;
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-.reveal-left.active,
-.reveal-right.active,
-.reveal-up.active,
-.reveal-down.active {
-  transform: translateX(0) translateY(0);
-  opacity: 1;
+@keyframes slideRight {
+  0% { opacity: 0; transform: translateX(-30px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
-/* Smooth transition for links and buttons */
-a, button {
-  transition: all 0.3s ease;
-}
+/* Animation delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-800 { animation-delay: 800ms; }
+.delay-900 { animation-delay: 900ms; }
+.delay-1000 { animation-delay: 1000ms; }
