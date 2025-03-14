@@ -306,7 +306,7 @@ export const ClientStatements = () => {
             </div>
           </TabsContent>
 
-          {/* Duplicate the TabsContent to show the same filtered data for other tabs */}
+          {/* Other tab contents */}
           <TabsContent value="draft" className="mt-0">
             <div ref={containerRef} className="space-y-4">
               {/* Same content structure as 'all' tab */}
