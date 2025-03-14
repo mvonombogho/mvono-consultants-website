@@ -161,6 +161,67 @@ const SalesPipeline = () => {
     }
   ]);
 
+  useEffect(() => {
+    // Animate in the pipeline stages and summary when component mounts
+    gsap.fromTo(
+      Object.values(stageRefs).map(ref => ref.current),
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, stagger: 0.1, duration: 0.6, ease: 'power2.out' }
+    );
+
+    gsap.fromTo(
+      summaryRef.current,
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.4 }
+    );
+  }, []);
+
+  useEffect(() => {
+    // Filter opportunities based on search term and stage filter
+    let results = opportunities;
+    
+    if (searchTerm) {
+      results = results.filter(opp => 
+        opp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.notes.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (stageFilter !== 'ALL') {
+      results = results.filter(opp => opp.stage === stageFilter);
+    }
+    
+    setFilteredOpportunities(results);
+  }, [searchTerm, stageFilter, opportunities]);
+
+  // Calculate pipeline metrics
+  const pipelineMetrics = {
+    totalValue: opportunities.reduce((sum, opp) => sum + opp.value, 0),
+    weightedValue: opportunities.reduce((sum, opp) => sum + (opp.value * opp.probability / 100), 0),
+    opportunityCount: opportunities.length,
+    wonCount: opportunities.filter(opp => opp.stage === 'WON').length,
+    lostCount: opportunities.filter(opp => opp.stage === 'LOST').length,
+    winRate: opportunities.length > 0 
+      ? (opportunities.filter(opp => opp.stage === 'WON').length / 
+         (opportunities.filter(opp => opp.stage === 'WON').length + 
+          opportunities.filter(opp => opp.stage === 'LOST').length) * 100) || 0
+      : 0,
+    averageDealSize: opportunities.length > 0 
+      ? opportunities.reduce((sum, opp) => sum + opp.value, 0) / opportunities.length 
+      : 0
+  };
+
+  // Get opportunities by stage for the kanban view
+  const getOpportunitiesByStage = (stage) => {
+    return filteredOpportunities.filter(opp => opp.stage === stage);
+  };
+  
+  // Get activities for the selected opportunity
+  const getOpportunityActivities = (opportunityId) => {
+    return activities.filter(activity => activity.opportunityId === opportunityId);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 h-full overflow-hidden flex flex-col">
       {/* Header with component title and actions */}
