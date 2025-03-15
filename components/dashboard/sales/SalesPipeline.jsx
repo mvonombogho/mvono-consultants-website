@@ -195,43 +195,215 @@ const SalesPipeline = () => {
     setFilteredOpportunities(results);
   }, [searchTerm, stageFilter, opportunities]);
 
-  // Calculate pipeline metrics
-  const pipelineMetrics = {
-    totalValue: opportunities.reduce((sum, opp) => sum + opp.value, 0),
-    weightedValue: opportunities.reduce((sum, opp) => sum + (opp.value * opp.probability / 100), 0),
-    opportunityCount: opportunities.length,
-    wonCount: opportunities.filter(opp => opp.stage === 'WON').length,
-    lostCount: opportunities.filter(opp => opp.stage === 'LOST').length,
-    winRate: opportunities.length > 0 
-      ? (opportunities.filter(opp => opp.stage === 'WON').length / 
-         (opportunities.filter(opp => opp.stage === 'WON').length + 
-          opportunities.filter(opp => opp.stage === 'LOST').length) * 100) || 0
-      : 0,
-    averageDealSize: opportunities.length > 0 
-      ? opportunities.reduce((sum, opp) => sum + opp.value, 0) / opportunities.length 
-      : 0
+  const handleOpenDetail = (opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setIsDetailOpen(true);
+    
+    // Animate in the details panel
+    gsap.fromTo(
+      detailsRef.current,
+      { x: 300, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+    );
   };
 
-  // Get opportunities by stage for the kanban view
-  const getOpportunitiesByStage = (stage) => {
-    return filteredOpportunities.filter(opp => opp.stage === stage);
+  const handleCloseDetail = () => {
+    gsap.to(detailsRef.current, {
+      x: 300, 
+      opacity: 0, 
+      duration: 0.3, 
+      ease: 'power2.in',
+      onComplete: () => setIsDetailOpen(false)
+    });
+  };
+
+  const handleOpenAddOpportunity = () => {
+    setIsAddOpportunityOpen(true);
+    
+    // Animate in the form
+    gsap.fromTo(
+      formRef.current,
+      { y: -50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+    );
+  };
+
+  const handleCloseAddOpportunity = () => {
+    gsap.to(formRef.current, {
+      y: -50, 
+      opacity: 0, 
+      duration: 0.3, 
+      ease: 'power2.in',
+      onComplete: () => setIsAddOpportunityOpen(false)
+    });
+  };
+
+  const handleAddOpportunity = (e) => {
+    e.preventDefault();
+    
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    const newOpportunityWithDetails = {
+      ...newOpportunity,
+      id: opportunities.length + 1,
+      value: parseFloat(newOpportunity.value) || 0,
+      lastActivity: "Created opportunity",
+      lastActivityDate: currentDate,
+      createdAt: currentDate,
+      tags: newOpportunity.tags.length ? newOpportunity.tags : [`${newOpportunity.stage}`]
+    };
+    
+    setOpportunities([newOpportunityWithDetails, ...opportunities]);
+    
+    // Add an activity log for the new opportunity
+    const newActivity = {
+      id: activities.length + 1,
+      opportunityId: newOpportunityWithDetails.id,
+      date: currentDate,
+      type: "CREATED",
+      content: "Opportunity created",
+      user: "Donald Mbogho"
+    };
+    
+    setActivities([newActivity, ...activities]);
+    
+    // Reset form
+    setNewOpportunity({
+      name: '',
+      client: '',
+      value: '',
+      stage: 'DISCOVERY',
+      probability: 20,
+      expectedCloseDate: '',
+      assignedTo: 'Donald Mbogho',
+      notes: '',
+      tags: []
+    });
+    
+    handleCloseAddOpportunity();
+  };
+
+  const handleTagInput = (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      e.preventDefault();
+      const newTag = e.target.value.trim();
+      if (!newOpportunity.tags.includes(newTag)) {
+        setNewOpportunity({
+          ...newOpportunity,
+          tags: [...newOpportunity.tags, newTag]
+        });
+      }
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setNewOpportunity({
+      ...newOpportunity,
+      tags: newOpportunity.tags.filter(tag => tag !== tagToRemove)
+    });
+  };
+
+  const handleUpdateOpportunityStage = (id, newStage) => {
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    const updatedOpportunities = opportunities.map(opp => {
+      if (opp.id === id) {
+        // Update probability based on stage
+        let probability = opp.probability;
+        switch (newStage) {
+          case 'DISCOVERY': probability = 20; break;
+          case 'QUALIFICATION': probability = 40; break;
+          case 'PROPOSAL': probability = 60; break;
+          case 'NEGOTIATION': probability = 80; break;
+          case 'WON': probability = 100; break;
+          case 'LOST': probability = 0; break;
+          default: break;
+        }
+        
+        // Log the activity of changing stage
+        const newActivity = {
+          id: activities.length + 1,
+          opportunityId: id,
+          date: currentDate,
+          type: "STAGE_CHANGE",
+          content: `Moved from ${PIPELINE_STAGES[opp.stage].label} to ${PIPELINE_STAGES[newStage].label}`,
+          user: opp.assignedTo
+        };
+        
+        setActivities([newActivity, ...activities]);
+        
+        return { 
+          ...opp, 
+          stage: newStage,
+          probability,
+          lastActivity: `Moved to ${PIPELINE_STAGES[newStage].label} stage`,
+          lastActivityDate: currentDate
+        };
+      }
+      return opp;
+    });
+    
+    setOpportunities(updatedOpportunities);
+    
+    if (selectedOpportunity && selectedOpportunity.id === id) {
+      // Update the selected opportunity if it's currently open in the details panel
+      const updatedStage = PIPELINE_STAGES[newStage];
+      setSelectedOpportunity({
+        ...selectedOpportunity,
+        stage: newStage,
+        probability: newStage === 'WON' ? 100 : newStage === 'LOST' ? 0 : selectedOpportunity.probability,
+        lastActivity: `Moved to ${updatedStage.label} stage`,
+        lastActivityDate: currentDate
+      });
+    }
+  };
+
+  const handleDeleteOpportunity = (id) => {
+    setOpportunities(opportunities.filter(opp => opp.id !== id));
+    if (isDetailOpen && selectedOpportunity && selectedOpportunity.id === id) {
+      handleCloseDetail();
+    }
   };
   
-  // Get activities for the selected opportunity
-  const getOpportunityActivities = (opportunityId) => {
-    return activities.filter(activity => activity.opportunityId === opportunityId);
+  const handleAddActivity = (e) => {
+    e.preventDefault();
+    if (!newActivity.trim() || !selectedOpportunity) return;
+    
+    const currentDate = new Date().toISOString().split('T')[0];
+    
+    const newActivityEntry = {
+      id: activities.length + 1,
+      opportunityId: selectedOpportunity.id,
+      date: currentDate,
+      type: "NOTE",
+      content: newActivity,
+      user: "Donald Mbogho"
+    };
+    
+    setActivities([newActivityEntry, ...activities]);
+    
+    // Update the opportunity's last activity
+    const updatedOpportunities = opportunities.map(opp => {
+      if (opp.id === selectedOpportunity.id) {
+        return {
+          ...opp,
+          lastActivity: newActivity,
+          lastActivityDate: currentDate
+        };
+      }
+      return opp;
+    });
+    
+    setOpportunities(updatedOpportunities);
+    
+    // Update the selected opportunity
+    setSelectedOpportunity({
+      ...selectedOpportunity,
+      lastActivity: newActivity,
+      lastActivityDate: currentDate
+    });
+    
+    // Reset input
+    setNewActivity('');
   };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 h-full overflow-hidden flex flex-col">
-      {/* Header with component title and actions */}
-      {/* Pipeline metrics summary section */}
-      {/* Search filters and stage selectors */}
-      {/* Kanban board to show opportunities by stage */}
-      {/* Opportunity details sidebar */}
-      {/* Add opportunity modal */}
-    </div>
-  );
-};
-
-export default SalesPipeline;
