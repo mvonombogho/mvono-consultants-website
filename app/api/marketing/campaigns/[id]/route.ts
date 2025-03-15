@@ -1,160 +1,173 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import prisma from '@/lib/prisma';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+const prisma = new PrismaClient();
+
+// GET /api/marketing/campaigns/[id] - Get a single campaign
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
+    
+    const id = params.id;
+    
     const campaign = await prisma.marketingCampaign.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
+        targetSegment: {
+          select: { id: true, name: true }
+        },
         createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
+          select: { id: true, name: true }
         },
         targetClients: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-            industry: true,
-          },
-        },
-        targetSegment: true,
-        metrics: {
-          orderBy: {
-            metricDate: 'desc',
-          },
-        },
-        contentItems: {
-          include: {
-            metrics: true,
-          },
+          select: { id: true, name: true }
         },
         emailMessages: {
-          select: {
-            id: true,
-            subject: true,
-            status: true,
-            sentDate: true,
-            opened: true,
-            clicked: true,
-          },
+          select: { id: true, subject: true, status: true, sentDate: true }
         },
-      },
+        contentItems: true,
+        metrics: true
+      }
     });
-
+    
     if (!campaign) {
-      return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Campaign not found' },
+        { status: 404 }
+      );
     }
-
+    
     return NextResponse.json(campaign);
   } catch (error) {
     console.error('Error fetching campaign:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch campaign' },
+      { status: 500 }
+    );
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+// PUT /api/marketing/campaigns/[id] - Update a campaign
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
+    
+    const id = params.id;
     const data = await req.json();
     
-    // Validate required fields
-    if (!data.name || !data.startDate || !data.endDate || !data.campaignType || !data.status) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    // Get current campaign to check for disconnecting clients
-    const currentCampaign = await prisma.marketingCampaign.findUnique({
-      where: { id: params.id },
-      include: {
-        targetClients: { select: { id: true } },
-      },
+    // Check if campaign exists
+    const existingCampaign = await prisma.marketingCampaign.findUnique({
+      where: { id }
     });
-
-    if (!currentCampaign) {
-      return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
-    }
-
-    // Initialize arrays if not provided
-    const targetClientIds = Array.isArray(data.targetClientIds) ? data.targetClientIds : [];
     
-    // Identify clients to disconnect
-    const currentClientIds = currentCampaign.targetClients.map((client) => client.id);
-    const clientsToDisconnect = currentClientIds.filter((id) => !targetClientIds.includes(id));
-
-    // Update the campaign
-    const campaign = await prisma.marketingCampaign.update({
-      where: { id: params.id },
-      data: {
-        name: data.name,
-        description: data.description || null,
-        objective: data.objective || null,
-        campaignType: data.campaignType,
-        status: data.status,
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
-        budget: data.budget ? parseFloat(data.budget) : null,
-        actualSpent: data.actualSpent ? parseFloat(data.actualSpent) : null,
-        ROI: data.ROI ? parseFloat(data.ROI) : null,
-        tags: data.tags || null,
-        targetClients: {
-          connect: targetClientIds.map((id: string) => ({ id })),
-          disconnect: clientsToDisconnect.map((id) => ({ id })),
+    if (!existingCampaign) {
+      return NextResponse.json(
+        { error: 'Campaign not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Prepare campaign data with date conversions
+    const campaignData = {
+      ...data,
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
+      updatedAt: new Date()
+    };
+    
+    // Handle target segment update if provided
+    if (data.targetSegmentId) {
+      campaignData.targetSegment = {
+        connect: { id: data.targetSegmentId }
+      };
+      
+      // Remove targetSegmentId to avoid Prisma errors
+      delete campaignData.targetSegmentId;
+    } else if (data.targetSegmentId === '') {
+      // If empty string, disconnect the segment
+      campaignData.targetSegment = { disconnect: true };
+      delete campaignData.targetSegmentId;
+    }
+    
+    const updatedCampaign = await prisma.marketingCampaign.update({
+      where: { id },
+      data: campaignData,
+      include: {
+        targetSegment: {
+          select: { id: true, name: true }
         },
-        targetSegment: data.targetSegmentId
-          ? { connect: { id: data.targetSegmentId } }
-          : data.targetSegmentId === null
-          ? { disconnect: true }
-          : undefined,
-      },
+        createdBy: {
+          select: { id: true, name: true }
+        }
+      }
     });
-
-    return NextResponse.json(campaign);
+    
+    return NextResponse.json(updatedCampaign);
   } catch (error) {
     console.error('Error updating campaign:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to update campaign' },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+// DELETE /api/marketing/campaigns/[id] - Delete a campaign
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // First, delete related content items and metrics
-    await prisma.campaignContent.deleteMany({
-      where: { campaignId: params.id },
+    
+    const id = params.id;
+    
+    // Check if campaign exists
+    const existingCampaign = await prisma.marketingCampaign.findUnique({
+      where: { id }
     });
-
-    await prisma.campaignMetric.deleteMany({
-      where: { campaignId: params.id },
-    });
-
+    
+    if (!existingCampaign) {
+      return NextResponse.json(
+        { error: 'Campaign not found' },
+        { status: 404 }
+      );
+    }
+    
     // Delete the campaign
     await prisma.marketingCampaign.delete({
-      where: { id: params.id },
+      where: { id }
     });
-
-    return NextResponse.json({ success: true });
+    
+    return NextResponse.json(
+      { message: 'Campaign deleted successfully' },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error deleting campaign:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to delete campaign' },
+      { status: 500 }
+    );
   }
 }
