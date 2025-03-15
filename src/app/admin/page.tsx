@@ -12,6 +12,7 @@ import {
   FaSpinner
 } from 'react-icons/fa'
 import { useClients } from '@/contexts/ClientContext'
+import UpcomingSchedulesWidget from '@/components/dashboard/UpcomingSchedulesWidget'
 
 // Mock data for sections that are not yet implemented
 const recentActivities = [
@@ -227,7 +228,7 @@ export default function AdminDashboard() {
         ))}
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Recent Activities */}
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h2>
@@ -291,6 +292,11 @@ export default function AdminDashboard() {
             </Link>
           </div>
         </div>
+      </div>
+      
+      {/* Upcoming Schedules Widget */}
+      <div className="mb-8">
+        <UpcomingSchedulesWidget />
       </div>
       
       {/* Client Industry Distribution */}
