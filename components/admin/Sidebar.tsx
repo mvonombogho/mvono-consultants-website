@@ -7,7 +7,7 @@ import { signOut } from 'next-auth/react';
 import { 
   LayoutDashboard, Users, FileText, CreditCard, Settings, LogOut,
   Menu, X, ChevronDown, Briefcase, Calendar, BarChart3, Buildings, 
-  ListTodo, CheckSquare,
+  ListTodo, CheckSquare, Mail, BarChart, Target
 } from 'lucide-react';
 
 type SidebarLink = {
@@ -72,6 +72,26 @@ const sidebarLinks: SidebarLink[] = [
   {
     label: 'Calendar',
     href: '/admin/calendar',
+    icon: <Calendar className="h-5 w-5" />,
+  },
+  {
+    label: 'Marketing',
+    href: '/admin/marketing',
+    icon: <BarChart className="h-5 w-5" />,
+    submenu: [
+      { label: 'Campaigns', href: '/admin/marketing/campaigns' },
+      { label: 'Customer Segments', href: '/admin/marketing/segments' },
+      { label: 'Email Management', href: '/admin/marketing/emails' },
+    ],
+  },
+  {
+    label: 'Documents',
+    href: '/admin/documents',
+    icon: <FileText className="h-5 w-5" />,
+  },
+  {
+    label: 'Schedule',
+    href: '/admin/schedule',
     icon: <Calendar className="h-5 w-5" />,
   },
   {
