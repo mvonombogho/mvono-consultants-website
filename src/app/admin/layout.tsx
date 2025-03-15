@@ -15,7 +15,8 @@ import {
   FaBars,
   FaTimes,
   FaFileAlt,
-  FaCalendarAlt
+  FaCalendarAlt,
+  FaBullhorn
 } from 'react-icons/fa'
 import { ClientProvider } from '@/contexts/ClientContext'
 import { ScheduleProvider } from '@/contexts/ScheduleContext'
@@ -30,6 +31,7 @@ const sidebarItems = [
   { name: 'Projects', icon: <FaClipboardList size={18} />, path: '/admin/projects' },
   { name: 'Documents', icon: <FaFileAlt size={18} />, path: '/admin/documents' },
   { name: 'Schedule', icon: <FaCalendarAlt size={18} />, path: '/admin/schedule' },
+  { name: 'Marketing', icon: <FaBullhorn size={18} />, path: '/admin/marketing' },
   { name: 'Analytics', icon: <FaChartBar size={18} />, path: '/admin/analytics' },
   { name: 'Settings', icon: <FaCog size={18} />, path: '/admin/settings' },
 ]
@@ -104,7 +106,7 @@ export default function AdminLayout({
                     <Link 
                       href={item.path}
                       className={`flex items-center py-2 px-4 rounded-lg transition-all ${
-                        pathname === item.path 
+                        pathname === item.path || pathname?.startsWith(item.path + '/') 
                           ? 'bg-primary-50 text-primary-700' 
                           : 'text-gray-600 hover:bg-gray-100'
                       }`}
