@@ -13,7 +13,8 @@ import {
   FaCog,
   FaSignOutAlt,
   FaBars,
-  FaTimes
+  FaTimes,
+  FaFileAlt
 } from 'react-icons/fa'
 import { ClientProvider } from '@/contexts/ClientContext'
 
@@ -24,6 +25,7 @@ const sidebarItems = [
   { name: 'Subcontractors', icon: <FaUserTie size={18} />, path: '/admin/subcontractors' },
   { name: 'Finance', icon: <FaFileInvoiceDollar size={18} />, path: '/admin/finance' },
   { name: 'Projects', icon: <FaClipboardList size={18} />, path: '/admin/projects' },
+  { name: 'Documents', icon: <FaFileAlt size={18} />, path: '/admin/documents' },
   { name: 'Analytics', icon: <FaChartBar size={18} />, path: '/admin/analytics' },
   { name: 'Settings', icon: <FaCog size={18} />, path: '/admin/settings' },
 ]
