@@ -12,18 +12,20 @@ datasource db {
 
 // User model for authentication
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  name      String
-  password  String
-  role      String    @default("user") // admin, user
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           String         @id @default(uuid())
+  email        String         @unique
+  name         String
+  password     String
+  role         String         @default("user") // admin, user
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  schedules    Schedule[]     @relation("AssignedTo")
+  createdSchedules Schedule[] @relation("CreatedBy")
 }
 
 // Client model
 model Client {
-  id              String    @id @default(uuid())
+  id              String      @id @default(uuid())
   name            String
   email           String?
   phone           String?
@@ -33,16 +35,17 @@ model Client {
   contactPerson   String?
   contactPosition String?
   notes           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   invoices        Invoice[]
   projects        Project[]
-  documents       Document[] // Relation to documents
+  documents       Document[]  // Relation to documents
+  schedules       Schedule[]  // Relation to schedules
 }
 
 // Subcontractor model
 model Subcontractor {
-  id            String    @id @default(uuid())
+  id            String      @id @default(uuid())
   name          String
   email         String?
   phone         String?
@@ -50,10 +53,11 @@ model Subcontractor {
   kraPin        String?
   specialty     String?
   notes         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  projects      Project[] @relation("ProjectSubcontractors")
-  documents     Document[] // Relation to documents
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  projects      Project[]   @relation("ProjectSubcontractors")
+  documents     Document[]  // Relation to documents
+  schedules     Schedule[]  // Relation to schedules
 }
 
 // Project model
@@ -70,32 +74,33 @@ model Project {
   totalValue      Float?
   invoices        Invoice[]
   documents       Document[]      // Relation to documents
+  schedules       Schedule[]      // Relation to schedules
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 }
 
 // Invoice model
 model Invoice {
-  id              String    @id @default(uuid())
-  invoiceNumber   String    @unique
+  id              String        @id @default(uuid())
+  invoiceNumber   String        @unique
   description     String?
   issueDate       DateTime
   dueDate         DateTime
   clientId        String
-  client          Client    @relation(fields: [clientId], references: [id])
+  client          Client        @relation(fields: [clientId], references: [id])
   projectId       String?
-  project         Project?  @relation(fields: [projectId], references: [id])
+  project         Project?      @relation(fields: [projectId], references: [id])
   lpoReference    String?
   items           InvoiceItem[]
   subtotal        Float
   taxAmount       Float
   totalAmount     Float
-  status          String    // draft, sent, paid, partial, overdue, cancelled
+  status          String        // draft, sent, paid, partial, overdue, cancelled
   notes           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   payments        Payment[]
-  documents       Document[] // Relation to documents
+  documents       Document[]    // Relation to documents
 }
 
 // Invoice item model
@@ -128,37 +133,70 @@ model Payment {
 
 // Service model
 model Service {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String?
   category    String
   price       Float?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  schedules   Schedule[] // Relation to schedules
 }
 
 // Document model
 model Document {
-  id               String    @id @default(uuid())
+  id               String         @id @default(uuid())
   title            String
   description      String?
   fileName         String
   fileUrl          String
-  fileType         String    // pdf, docx, xlsx, png, etc.
-  fileSize         Int       // in bytes
-  category         String    // contract, invoice, certificate, report, etc.
+  fileType         String         // pdf, docx, xlsx, png, etc.
+  fileSize         Int            // in bytes
+  category         String         // contract, invoice, certificate, report, etc.
   clientId         String?
-  client           Client?   @relation(fields: [clientId], references: [id])
+  client           Client?        @relation(fields: [clientId], references: [id])
   projectId        String?
-  project          Project?  @relation(fields: [projectId], references: [id])
+  project          Project?       @relation(fields: [projectId], references: [id])
   invoiceId        String?
-  invoice          Invoice?  @relation(fields: [invoiceId], references: [id])
+  invoice          Invoice?       @relation(fields: [invoiceId], references: [id])
   subcontractorId  String?
   subcontractor    Subcontractor? @relation(fields: [subcontractorId], references: [id])
-  expirationDate   DateTime? // For documents that expire (certificates, licenses)
-  tags             String?   // Comma-separated tags for searching
-  uploadedById     String    // User who uploaded the document 
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  expirationDate   DateTime?      // For documents that expire (certificates, licenses)
+  tags             String?        // Comma-separated tags for searching
+  uploadedById     String         // User who uploaded the document 
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+// Schedule model for service scheduling
+model Schedule {
+  id              String         @id @default(uuid())
+  title           String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime
+  location        String?
+  status          String         // scheduled, completed, cancelled, postponed
+  priority        String?        // high, medium, low
+  clientId        String?
+  client          Client?        @relation(fields: [clientId], references: [id])
+  projectId       String?
+  project         Project?       @relation(fields: [projectId], references: [id])
+  serviceId       String?
+  service         Service?       @relation(fields: [serviceId], references: [id])
+  subcontractorId String?
+  subcontractor   Subcontractor? @relation(fields: [subcontractorId], references: [id])
+  notes           String?
+  createdById     String
+  createdBy       User           @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedToId    String?
+  assignedTo      User?          @relation("AssignedTo", fields: [assignedToId], references: [id])
+  reminderSent    Boolean        @default(false)
+  isAllDay        Boolean        @default(false)
+  recurrence      String?        // none, daily, weekly, monthly, yearly
+  recurrenceEnd   DateTime?      // End date for recurring schedules
+  color           String?        // For calendar display
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
