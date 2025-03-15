@@ -201,3 +201,94 @@ export default function NewSegmentPage() {
       setIsSubmitting(false)
     }
   }
+
+  // Render input based on filter type and operator
+  const renderFilterValueInput = (filter: FilterCriterion) => {
+    // Special case for industry type with equals/not equals operator
+    if (filter.type === 'industry' && ['eq', 'neq'].includes(filter.operator)) {
+      return (
+        <select
+          value={filter.value}
+          onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
+          className="w-full border border-gray-300 rounded-md p-2"
+        >
+          <option value="">Select Industry</option>
+          {industryOptions.map((industry) => (
+            <option key={industry} value={industry}>
+              {industry}
+            </option>
+          ))}
+        </select>
+      )
+    }
+    
+    // Revenue needs number inputs
+    if (filter.type === 'revenue') {
+      if (filter.operator === 'between') {
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              placeholder="Min"
+              value={filter.value}
+              onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
+            />
+            <span>and</span>
+            <Input
+              type="number"
+              placeholder="Max"
+              value={filter.value2 || ''}
+              onChange={(e) => handleFilterChange(filter.id, 'value2', e.target.value)}
+            />
+          </div>
+        )
+      }
+      
+      return (
+        <Input
+          type="number"
+          placeholder="Value"
+          value={filter.value}
+          onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
+        />
+      )
+    }
+    
+    // Date inputs for date-related filters
+    if (['lastService', 'certificateExpiry'].includes(filter.type)) {
+      if (filter.operator === 'between') {
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              type="date"
+              value={filter.value}
+              onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
+            />
+            <span>and</span>
+            <Input
+              type="date"
+              value={filter.value2 || ''}
+              onChange={(e) => handleFilterChange(filter.id, 'value2', e.target.value)}
+            />
+          </div>
+        )
+      }
+      
+      return (
+        <Input
+          type="date"
+          value={filter.value}
+          onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
+        />
+      )
+    }
+    
+    // Default text input for other cases
+    return (
+      <Input
+        placeholder="Value"
+        value={filter.value}
+        onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
+      />
+    )
+  }
