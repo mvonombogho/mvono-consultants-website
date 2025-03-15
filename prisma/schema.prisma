@@ -21,6 +21,8 @@ model User {
   updatedAt    DateTime       @updatedAt
   schedules    Schedule[]     @relation("AssignedTo")
   createdSchedules Schedule[] @relation("CreatedBy")
+  campaigns    MarketingCampaign[] @relation("CampaignCreator")
+  emailMessages EmailMessage[] @relation("MessageSender")
 }
 
 // Client model
@@ -41,6 +43,9 @@ model Client {
   projects        Project[]
   documents       Document[]  // Relation to documents
   schedules       Schedule[]  // Relation to schedules
+  customerSegments CustomerSegment[] // Relation to customer segments
+  campaigns       MarketingCampaign[] @relation("CampaignTargets")
+  emailMessages   EmailMessage[] // Relation to email messages
 }
 
 // Subcontractor model
@@ -199,4 +204,139 @@ model Schedule {
   color           String?        // For calendar display
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+}
+
+// ------------- Phase 6: Advanced Marketing & Integration Models -------------
+
+// Marketing Campaign model
+model MarketingCampaign {
+  id              String         @id @default(uuid())
+  name            String
+  description     String?
+  objective       String?
+  campaignType    String         // email, social, content, event, print, etc.
+  status          String         // draft, scheduled, active, completed, cancelled
+  startDate       DateTime
+  endDate         DateTime
+  budget          Float?
+  actualSpent     Float?         @default(0)
+  ROI             Float?         // Return on Investment percentage
+  createdById     String
+  createdBy       User           @relation("CampaignCreator", fields: [createdById], references: [id])
+  targetClients   Client[]       @relation("CampaignTargets")
+  targetSegmentId String?
+  targetSegment   CustomerSegment? @relation(fields: [targetSegmentId], references: [id])
+  emailMessages   EmailMessage[] // Relation to email messages
+  contentItems    CampaignContent[]
+  metrics         CampaignMetric[]
+  tags            String?        // Comma-separated tags
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+// Campaign Content model
+model CampaignContent {
+  id              String           @id @default(uuid())
+  title           String
+  contentType     String           // email, landing_page, social_post, blog, video, etc.
+  description     String?
+  content         String?          // The actual content or URL to content
+  status          String           // draft, review, approved, published
+  scheduledDate   DateTime?
+  publishedDate   DateTime?
+  campaignId      String
+  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  metrics         ContentMetric[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+// Campaign Metrics model
+model CampaignMetric {
+  id              String          @id @default(uuid())
+  metricName      String          // impressions, clicks, conversions, etc.
+  metricValue     Float
+  metricDate      DateTime
+  campaignId      String
+  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Content Metrics model
+model ContentMetric {
+  id              String          @id @default(uuid())
+  metricName      String          // views, clicks, shares, etc.
+  metricValue     Float
+  metricDate      DateTime
+  contentId       String
+  content         CampaignContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Customer Segmentation model
+model CustomerSegment {
+  id              String          @id @default(uuid())
+  name            String
+  description     String?
+  criteria        String?         // JSON string with segmentation criteria
+  segmentSize     Int?            // Number of clients in segment
+  clients         Client[]        // Clients in this segment
+  isActive        Boolean         @default(true)
+  campaigns       MarketingCampaign[]
+  tags            String?         // Comma-separated tags
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Cross-Selling model
+model CrossSellOpportunity {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  sourceServiceId String?         // The service client already has
+  targetServiceId String?         // The service being recommended
+  segmentId       String?
+  segment         CustomerSegment? @relation(fields: [segmentId], references: [id])
+  probability     Float?          // Probability of conversion (0-100%)
+  estimatedValue  Float?          // Estimated value of opportunity
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Email Message model
+model EmailMessage {
+  id              String          @id @default(uuid())
+  subject         String
+  body            String
+  status          String          // draft, scheduled, sent, failed
+  messageType     String          // marketing, invoice, reminder, newsletter, etc.
+  scheduledDate   DateTime?
+  sentDate        DateTime?
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  campaignId      String?
+  campaign        MarketingCampaign? @relation(fields: [campaignId], references: [id])
+  senderId        String
+  sender          User            @relation("MessageSender", fields: [senderId], references: [id])
+  opened          Boolean         @default(false)
+  openedDate      DateTime?
+  clicked         Boolean         @default(false)
+  clickedDate     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Email Template model
+model EmailTemplate {
+  id              String          @id @default(uuid())
+  name            String
+  subject         String
+  body            String
+  templateType    String          // marketing, invoice, reminder, newsletter, etc.
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
