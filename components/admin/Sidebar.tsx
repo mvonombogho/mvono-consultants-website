@@ -7,6 +7,7 @@ import { signOut } from 'next-auth/react';
 import { 
   LayoutDashboard, Users, FileText, CreditCard, Settings, LogOut,
   Menu, X, ChevronDown, Briefcase, Calendar, BarChart3, Buildings, 
+  ListTodo, CheckSquare,
 } from 'lucide-react';
 
 type SidebarLink = {
@@ -41,6 +42,7 @@ const sidebarLinks: SidebarLink[] = [
     submenu: [
       { label: 'All Projects', href: '/admin/projects' },
       { label: 'Add New Project', href: '/admin/projects/new' },
+      { label: 'Project Management', href: '/admin/projects/management' },
     ],
   },
   {
