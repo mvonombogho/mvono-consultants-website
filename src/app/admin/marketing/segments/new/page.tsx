@@ -76,3 +76,128 @@ export default function NewSegmentPage() {
   
   const router = useRouter()
   const { toast } = useToast()
+
+  // Handle adding a new filter
+  const addFilter = () => {
+    const newId = (Math.max(0, ...filters.map(f => parseInt(f.id))) + 1).toString()
+    setFilters([...filters, { id: newId, type: 'industry', operator: 'eq', value: '' }])
+  }
+
+  // Handle removing a filter
+  const removeFilter = (id: string) => {
+    if (filters.length > 1) {
+      setFilters(filters.filter(filter => filter.id !== id))
+    }
+  }
+
+  // Handle filter change
+  const handleFilterChange = (id: string, field: string, value: string) => {
+    setFilters(prevFilters => {
+      return prevFilters.map(filter => {
+        if (filter.id === id) {
+          const updatedFilter = { ...filter, [field]: value }
+          
+          // Reset operator if necessary when changing filter type
+          if (field === 'type') {
+            const newType = value
+            const currentOperator = filter.operator
+            const isOperatorCompatible = comparisonOperators
+              .find(op => op.value === currentOperator)
+              ?.compatibleWith.includes(newType)
+            
+            if (!isOperatorCompatible) {
+              // Set default operator based on new type
+              if (['industry', 'location', 'serviceType'].includes(newType)) {
+                updatedFilter.operator = 'eq'
+              } else {
+                updatedFilter.operator = 'gt'
+              }
+              updatedFilter.value = ''
+            }
+          }
+          
+          return updatedFilter
+        }
+        return filter
+      })
+    })
+  }
+
+  // Handle adding a tag
+  const addTag = () => {
+    if (newTag && !tags.includes(newTag)) {
+      setTags([...tags, newTag])
+      setNewTag('')
+    }
+  }
+
+  // Handle removing a tag
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove))
+  }
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!segmentName) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please provide a name for the segment',
+        variant: 'destructive',
+      })
+      return
+    }
+    
+    // Validate filters
+    const invalidFilters = filters.filter(filter => !filter.value)
+    if (invalidFilters.length > 0) {
+      toast({
+        title: 'Incomplete Filters',
+        description: 'Please complete all filter criteria',
+        variant: 'destructive',
+      })
+      return
+    }
+    
+    try {
+      setIsSubmitting(true)
+      
+      // Format the data for submission
+      const segmentData = {
+        name: segmentName,
+        description: segmentDescription,
+        criteria: JSON.stringify({ filters }),
+        tags: tags.join(','),
+        isActive: true,
+      }
+      
+      // In production, this would be an API call
+      // const response = await fetch('/api/segments', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(segmentData),
+      // })
+      
+      // Mock success response
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      toast({
+        title: 'Success',
+        description: 'Customer segment created successfully',
+      })
+      
+      router.push('/admin/marketing/segments')
+    } catch (error) {
+      console.error('Error creating segment:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to create customer segment',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
