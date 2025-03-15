@@ -407,3 +407,110 @@ const SalesPipeline = () => {
     // Reset input
     setNewActivity('');
   };
+
+  // Calculate pipeline metrics
+  const pipelineMetrics = {
+    totalValue: opportunities.reduce((sum, opp) => sum + opp.value, 0),
+    weightedValue: opportunities.reduce((sum, opp) => sum + (opp.value * opp.probability / 100), 0),
+    opportunityCount: opportunities.length,
+    wonCount: opportunities.filter(opp => opp.stage === 'WON').length,
+    lostCount: opportunities.filter(opp => opp.stage === 'LOST').length,
+    winRate: opportunities.length > 0 
+      ? (opportunities.filter(opp => opp.stage === 'WON').length / 
+         (opportunities.filter(opp => opp.stage === 'WON').length + 
+          opportunities.filter(opp => opp.stage === 'LOST').length) * 100) || 0
+      : 0,
+    averageDealSize: opportunities.length > 0 
+      ? opportunities.reduce((sum, opp) => sum + opp.value, 0) / opportunities.length 
+      : 0
+  };
+
+  // Get opportunities by stage for the kanban view
+  const getOpportunitiesByStage = (stage) => {
+    return filteredOpportunities.filter(opp => opp.stage === stage);
+  };
+  
+  // Get activities for the selected opportunity
+  const getOpportunityActivities = (opportunityId) => {
+    return activities.filter(activity => activity.opportunityId === opportunityId);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6 h-full overflow-hidden flex flex-col">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Sales Pipeline</h2>
+        
+        <div className="flex space-x-2">
+          <button 
+            onClick={handleOpenAddOpportunity}
+            className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+          >
+            <PlusCircle size={16} className="mr-1" />
+            <span>New Opportunity</span>
+          </button>
+          <button className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md transition-colors">
+            <Download size={16} className="mr-1" />
+            <span>Export</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Pipeline Summary */}
+      <div 
+        ref={summaryRef}
+        className="grid grid-cols-3 gap-4 mb-6"
+      >
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="text-blue-500 font-medium">Pipeline Value</div>
+          <div className="text-2xl font-bold">KES {pipelineMetrics.totalValue.toLocaleString()}</div>
+          <div className="text-sm text-gray-500">
+            Weighted: KES {Math.round(pipelineMetrics.weightedValue).toLocaleString()}
+          </div>
+        </div>
+        
+        <div className="bg-green-50 p-4 rounded-lg">
+          <div className="text-green-500 font-medium">Win Rate</div>
+          <div className="text-2xl font-bold">{pipelineMetrics.winRate.toFixed(1)}%</div>
+          <div className="text-sm text-gray-500">
+            {pipelineMetrics.wonCount} won / {pipelineMetrics.lostCount} lost
+          </div>
+        </div>
+        
+        <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="text-purple-500 font-medium">Average Deal Size</div>
+          <div className="text-2xl font-bold">KES {Math.round(pipelineMetrics.averageDealSize).toLocaleString()}</div>
+          <div className="text-sm text-gray-500">
+            {pipelineMetrics.opportunityCount} opportunities
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex justify-between mb-6">
+        <div className="relative w-64">
+          <input
+            type="text"
+            placeholder="Search opportunities..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Filter size={16} className="text-gray-500" />
+          <select
+            value={stageFilter}
+            onChange={(e) => setStageFilter(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="ALL">All Stages</option>
+            {Object.keys(PIPELINE_STAGES).map(stageKey => (
+              <option key={stageKey} value={stageKey}>
+                {PIPELINE_STAGES[stageKey].label} Stage
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
