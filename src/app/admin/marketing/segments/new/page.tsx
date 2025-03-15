@@ -292,3 +292,226 @@ export default function NewSegmentPage() {
       />
     )
   }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="mr-4"
+          >
+            <FaArrowLeft className="mr-2" /> Back
+          </Button>
+          <h1 className="text-2xl font-bold tracking-tight">Create Customer Segment</h1>
+        </div>
+        <Button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="flex items-center"
+        >
+          <FaSave className="mr-2" />
+          {isSubmitting ? 'Saving...' : 'Save Segment'}
+        </Button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Segment Details</CardTitle>
+            <CardDescription>
+              Create a named segment to group clients based on specific criteria
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="segmentName">Segment Name *</Label>
+              <Input
+                id="segmentName"
+                placeholder="e.g., High-Value Manufacturing Clients"
+                value={segmentName}
+                onChange={(e) => setSegmentName(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="segmentDescription">Description</Label>
+              <textarea
+                id="segmentDescription"
+                placeholder="Describe the purpose of this segment"
+                value={segmentDescription}
+                onChange={(e) => setSegmentDescription(e.target.value)}
+                className="w-full h-24 p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Filter Criteria</CardTitle>
+            <CardDescription>
+              Define the rules for client inclusion in this segment
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {filters.map((filter, index) => (
+              <div 
+                key={filter.id}
+                className="p-4 border border-gray-200 rounded-lg space-y-4"
+              >
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium">Filter {index + 1}</h3>
+                  {filters.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeFilter(filter.id)}
+                      className="h-8 px-2 text-red-600 hover:text-red-700"
+                    >
+                      <FaTimes size={14} />
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Field</Label>
+                    <select
+                      value={filter.type}
+                      onChange={(e) => handleFilterChange(filter.id, 'type', e.target.value)}
+                      className="w-full border border-gray-300 rounded-md p-2"
+                    >
+                      {filterTypes.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Operator</Label>
+                    <select
+                      value={filter.operator}
+                      onChange={(e) => handleFilterChange(filter.id, 'operator', e.target.value)}
+                      className="w-full border border-gray-300 rounded-md p-2"
+                    >
+                      {comparisonOperators
+                        .filter(op => op.compatibleWith.includes(filter.type))
+                        .map((operator) => (
+                          <option key={operator.value} value={operator.value}>
+                            {operator.label}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Value</Label>
+                    {renderFilterValueInput(filter)}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addFilter}
+              className="mt-4"
+            >
+              <FaPlus className="mr-2" /> Add Filter
+            </Button>
+            
+            <div className="p-4 bg-gray-50 rounded-md mt-6">
+              <h3 className="font-medium text-gray-800 mb-2">Segment Summary</h3>
+              <p className="text-sm text-gray-600">
+                This segment will include clients that match:
+              </p>
+              <ul className="list-disc list-inside mt-2 space-y-1 text-sm text-gray-600">
+                {filters.map((filter, index) => {
+                  const fieldLabel = filterTypes.find(t => t.value === filter.type)?.label
+                  const operatorLabel = comparisonOperators.find(o => o.value === filter.operator)?.label
+                  
+                  return (
+                    <li key={filter.id}>
+                      {fieldLabel} {operatorLabel?.toLowerCase()} <strong>{filter.value}</strong>
+                      {filter.operator === 'between' && filter.value2 && (
+                        <> and <strong>{filter.value2}</strong></>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Tags</CardTitle>
+            <CardDescription>
+              Add optional tags to help organize and search for this segment
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <div 
+                    key={tag}
+                    className="flex items-center gap-1 bg-primary-50 text-primary-700 px-3 py-1 rounded-full text-sm"
+                  >
+                    <FaTag size={12} />
+                    <span>{tag}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="ml-1 text-primary-700 hover:text-primary-900"
+                    >
+                      <FaTimes size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add a tag (e.g., high-value, needs-renewal)"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addTag()
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={addTag}
+                  disabled={!newTag}
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            className="px-6"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Creating Segment...' : 'Create Segment'}
+          </Button>
+        </div>
+      </form>
+    </div>
+  )
+}
