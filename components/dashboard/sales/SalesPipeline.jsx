@@ -514,3 +514,71 @@ const SalesPipeline = () => {
           </select>
         </div>
       </div>
+
+      {/* Pipeline Kanban Board */}
+      <div className="flex-1 overflow-auto">
+        <div className="grid grid-cols-6 gap-4 h-full">
+          {Object.keys(PIPELINE_STAGES).map((stageKey) => (
+            <div 
+              key={stageKey}
+              ref={stageRefs[stageKey]}
+              className="bg-gray-50 rounded-lg p-4 flex flex-col min-w-[200px]"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className={`flex items-center gap-2 text-sm font-medium ${PIPELINE_STAGES[stageKey].color.replace('bg-', 'text-')}`}>
+                  {React.createElement(PIPELINE_STAGES[stageKey].icon, { size: 14 })}
+                  <span>{PIPELINE_STAGES[stageKey].label}</span>
+                </div>
+                <div className="bg-white text-xs font-medium text-gray-500 h-5 min-w-5 rounded-full flex items-center justify-center px-1.5">
+                  {getOpportunitiesByStage(stageKey).length}
+                </div>
+              </div>
+              
+              <div className="space-y-3 overflow-y-auto">
+                {getOpportunitiesByStage(stageKey).map((opportunity) => (
+                  <div 
+                    key={opportunity.id}
+                    onClick={() => handleOpenDetail(opportunity)}
+                    className="bg-white p-3 rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  >
+                    <div className="font-medium text-gray-800 mb-1">{opportunity.name}</div>
+                    <div className="text-sm text-gray-500 mb-2">{opportunity.client}</div>
+                    
+                    <div className="flex items-center text-sm text-gray-700 mb-2">
+                      <DollarSign size={14} className="text-gray-400 mr-1" />
+                      <span>KES {opportunity.value.toLocaleString()}</span>
+                    </div>
+                    
+                    <div className="flex items-center text-sm text-gray-700 mb-2">
+                      <Calendar size={14} className="text-gray-400 mr-1" />
+                      <span>{new Date(opportunity.expectedCloseDate).toLocaleDateString()}</span>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {opportunity.tags.slice(0, 2).map((tag, index) => (
+                        <span 
+                          key={index}
+                          className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {opportunity.tags.length > 2 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          +{opportunity.tags.length - 2}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                
+                {getOpportunitiesByStage(stageKey).length === 0 && (
+                  <div className="text-center py-4 text-sm text-gray-400">
+                    No opportunities
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
