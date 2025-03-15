@@ -37,6 +37,7 @@ model Client {
   updatedAt       DateTime  @updatedAt
   invoices        Invoice[]
   projects        Project[]
+  documents       Document[] // Relation to documents
 }
 
 // Subcontractor model
@@ -52,6 +53,7 @@ model Subcontractor {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   projects      Project[] @relation("ProjectSubcontractors")
+  documents     Document[] // Relation to documents
 }
 
 // Project model
@@ -67,6 +69,7 @@ model Project {
   subcontractors  Subcontractor[] @relation("ProjectSubcontractors")
   totalValue      Float?
   invoices        Invoice[]
+  documents       Document[]      // Relation to documents
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 }
@@ -92,6 +95,7 @@ model Invoice {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   payments        Payment[]
+  documents       Document[] // Relation to documents
 }
 
 // Invoice item model
@@ -132,4 +136,29 @@ model Service {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// Document model
+model Document {
+  id               String    @id @default(uuid())
+  title            String
+  description      String?
+  fileName         String
+  fileUrl          String
+  fileType         String    // pdf, docx, xlsx, png, etc.
+  fileSize         Int       // in bytes
+  category         String    // contract, invoice, certificate, report, etc.
+  clientId         String?
+  client           Client?   @relation(fields: [clientId], references: [id])
+  projectId        String?
+  project          Project?  @relation(fields: [projectId], references: [id])
+  invoiceId        String?
+  invoice          Invoice?  @relation(fields: [invoiceId], references: [id])
+  subcontractorId  String?
+  subcontractor    Subcontractor? @relation(fields: [subcontractorId], references: [id])
+  expirationDate   DateTime? // For documents that expire (certificates, licenses)
+  tags             String?   // Comma-separated tags for searching
+  uploadedById     String    // User who uploaded the document 
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
