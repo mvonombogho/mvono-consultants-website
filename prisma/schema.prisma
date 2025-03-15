@@ -23,6 +23,8 @@ model User {
   createdSchedules Schedule[] @relation("CreatedBy")
   campaigns    MarketingCampaign[] @relation("CampaignCreator")
   emailMessages EmailMessage[] @relation("MessageSender")
+  complianceEvents ComplianceEvent[] @relation("ComplianceCreator")
+  competitorNotes CompetitorNote[] @relation("CompetitorNoteCreator")
 }
 
 // Client model
@@ -46,6 +48,10 @@ model Client {
   customerSegments CustomerSegment[] // Relation to customer segments
   campaigns       MarketingCampaign[] @relation("CampaignTargets")
   emailMessages   EmailMessage[] // Relation to email messages
+  complianceEvents ComplianceEvent[] // Relation to compliance events
+  serviceAnniversaries ServiceAnniversary[] // Relation to service anniversaries
+  certifications   Certification[] // Relation to certifications
+  dealOpportunities DealOpportunity[] // Relation to deal opportunities
 }
 
 // Subcontractor model
@@ -82,6 +88,7 @@ model Project {
   schedules       Schedule[]      // Relation to schedules
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+  dealOpportunities DealOpportunity[] // Relation to deal opportunities 
 }
 
 // Invoice model
@@ -138,15 +145,16 @@ model Payment {
 
 // Service model
 model Service {
-  id          String     @id @default(uuid())
-  name        String
-  description String?
-  category    String
-  price       Float?
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  schedules   Schedule[] // Relation to schedules
+  id              String     @id @default(uuid())
+  name            String
+  description     String?
+  category        String
+  price           Float?
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  schedules       Schedule[] // Relation to schedules
+  serviceAnniversaries ServiceAnniversary[] // Relation to service anniversaries
 }
 
 // Document model
@@ -172,6 +180,7 @@ model Document {
   uploadedById     String         // User who uploaded the document 
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  certifications   Certification[] // Relation to certifications
 }
 
 // Schedule model for service scheduling
@@ -337,6 +346,133 @@ model EmailTemplate {
   body            String
   templateType    String          // marketing, invoice, reminder, newsletter, etc.
   isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// ------------- Phase 7: Advanced Features & Refinement Models -------------
+
+// Compliance Event model
+model ComplianceEvent {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  complianceType  String          // regulatory, safety, environmental, legal, etc.
+  dueDate         DateTime
+  status          String          // pending, in-progress, completed, overdue
+  priority        String          // low, medium, high
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  createdById     String
+  createdBy       User            @relation("ComplianceCreator", fields: [createdById], references: [id])
+  notes           String?
+  completedDate   DateTime?
+  documentIds     String[]        // Array of document IDs related to this compliance event
+  reminderSent    Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Service Anniversary model
+model ServiceAnniversary {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  anniversaryDate DateTime
+  serviceId       String
+  service         Service         @relation(fields: [serviceId], references: [id])
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  yearsOfService  Int
+  status          String          // upcoming, acknowledged, celebrated
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Certification model
+model Certification {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  certType        String          // safety, quality, environmental, etc.
+  issueDate       DateTime
+  expiryDate      DateTime
+  status          String          // active, expired, renewal-pending
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  documentId      String?
+  document        Document?       @relation(fields: [documentId], references: [id])
+  reminderSent    Boolean         @default(false)
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Competitor model
+model Competitor {
+  id              String          @id @default(uuid())
+  name            String
+  website         String?
+  industry        String?
+  description     String?
+  strengths       String?         // Comma-separated strengths
+  weaknesses      String?         // Comma-separated weaknesses
+  services        String?         // Comma-separated services
+  marketShare     Float?          // Estimated market share percentage
+  notes           CompetitorNote[]
+  dealOpportunities DealOpportunity[] // Relation to deal opportunities
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Competitor Notes model
+model CompetitorNote {
+  id              String          @id @default(uuid())
+  competitorId    String
+  competitor      Competitor      @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  title           String
+  content         String
+  createdById     String
+  createdBy       User            @relation("CompetitorNoteCreator", fields: [createdById], references: [id])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Deal Opportunity model (for Win/Loss analysis)
+model DealOpportunity {
+  id                  String          @id @default(uuid())
+  title               String
+  description         String?
+  clientId            String
+  client              Client          @relation(fields: [clientId], references: [id])
+  projectId           String?
+  project             Project?        @relation(fields: [projectId], references: [id])
+  competitorIds       String[]        // Array of competitor IDs involved
+  competitors         Competitor[]    // Many-to-many relation
+  status              String          // won, lost, pending
+  value               Float           // Monetary value of the deal
+  winProbability      Float?          // Probability of winning (0-100%)
+  closingDate         DateTime?
+  winFactors          String?         // Factors contributing to winning (JSON)
+  lossFactors         String?         // Factors contributing to losing (JSON)
+  learnings           String?         // Learnings from the deal
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+}
+
+// Market Position model
+model MarketPosition {
+  id              String          @id @default(uuid())
+  year            Int
+  quarter         Int
+  industry        String
+  marketSize      Float           // Total market size in monetary value
+  companyShare    Float           // Company's market share percentage
+  topCompetitors  String          // JSON array of top competitors and their shares
+  growthRate      Float           // Market growth rate percentage
+  notes           String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 }
