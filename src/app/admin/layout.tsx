@@ -14,7 +14,8 @@ import {
   FaSignOutAlt,
   FaBars,
   FaTimes,
-  FaFileAlt
+  FaFileAlt,
+  FaCalendarAlt
 } from 'react-icons/fa'
 import { ClientProvider } from '@/contexts/ClientContext'
 
@@ -26,6 +27,7 @@ const sidebarItems = [
   { name: 'Finance', icon: <FaFileInvoiceDollar size={18} />, path: '/admin/finance' },
   { name: 'Projects', icon: <FaClipboardList size={18} />, path: '/admin/projects' },
   { name: 'Documents', icon: <FaFileAlt size={18} />, path: '/admin/documents' },
+  { name: 'Schedule', icon: <FaCalendarAlt size={18} />, path: '/admin/schedule' },
   { name: 'Analytics', icon: <FaChartBar size={18} />, path: '/admin/analytics' },
   { name: 'Settings', icon: <FaCog size={18} />, path: '/admin/settings' },
 ]
