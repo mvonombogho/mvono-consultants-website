@@ -1,108 +1,111 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import prisma from '@/lib/prisma';
 
+const prisma = new PrismaClient();
+
+// GET /api/marketing/segments - Get all segments
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const searchParams = req.nextUrl.searchParams;
-    const isActive = searchParams.get('isActive');
-
-    let whereClause: any = {};
     
-    if (isActive !== null) {
-      whereClause.isActive = isActive === 'true';
-    }
-
     const segments = await prisma.customerSegment.findMany({
-      where: whereClause,
+      orderBy: { createdAt: 'desc' },
       include: {
-        clients: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
         _count: {
-          select: {
-            clients: true,
-          },
+          select: { clients: true }
         },
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
+        clients: {
+          select: { id: true }
+        }
+      }
     });
-
-    // Transform the results to include segment size
+    
+    // Transform data to include segmentSize
     const transformedSegments = segments.map(segment => ({
       ...segment,
       segmentSize: segment._count.clients,
-      _count: undefined,
+      clients: undefined,
+      _count: undefined
     }));
-
+    
     return NextResponse.json(transformedSegments);
   } catch (error) {
     console.error('Error fetching segments:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch segments' },
+      { status: 500 }
+    );
   }
 }
 
+// POST /api/marketing/segments - Create a new segment
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
+    
     const data = await req.json();
     
-    // Validate required fields
-    if (!data.name) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    // Initialize client IDs if provided
-    const clientIds = Array.isArray(data.clientIds) ? data.clientIds : [];
-
-    // Create the segment
+    // Parse criteria to find clients that match the criteria
+    const criteriaObj = JSON.parse(data.criteria);
+    
+    // Build queries for client filtering based on criteria
+    let clientWhere: any = {};
+    
+    // Process each criteria field
+    Object.entries(criteriaObj).forEach(([key, value]) => {
+      // Simple equals for now, could be expanded with operators
+      clientWhere[key] = value;
+    });
+    
+    // Find matching clients
+    const matchingClients = await prisma.client.findMany({
+      where: clientWhere,
+      select: { id: true }
+    });
+    
+    // Extract client IDs
+    const clientIds = matchingClients.map(client => ({ id: client.id }));
+    
+    // Create segment with connected clients
     const segment = await prisma.customerSegment.create({
       data: {
         name: data.name,
-        description: data.description || null,
-        criteria: data.criteria || null,
-        isActive: data.isActive !== false, // Default to true if not explicitly set to false
-        tags: data.tags || null,
+        description: data.description || '',
+        criteria: data.criteria,
+        isActive: data.isActive,
+        tags: data.tags || '',
         clients: {
-          connect: clientIds.map((id: string) => ({ id })),
-        },
+          connect: clientIds
+        }
       },
       include: {
-        clients: true,
         _count: {
-          select: {
-            clients: true,
-          },
-        },
-      },
+          select: { clients: true }
+        }
+      }
     });
-
-    // Transform the result to include segment size
-    const transformedSegment = {
+    
+    // Return segment with count of connected clients
+    return NextResponse.json({
       ...segment,
       segmentSize: segment._count.clients,
-      _count: undefined,
-    };
-
-    return NextResponse.json(transformedSegment, { status: 201 });
+      _count: undefined
+    }, { status: 201 });
   } catch (error) {
     console.error('Error creating segment:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create segment' },
+      { status: 500 }
+    );
   }
 }
