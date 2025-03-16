@@ -261,3 +261,188 @@ export default function AddProposalDialog({ open, onClose, onSave }) {
                 </div>
               )}
             </div>
+
+            {/* Proposal Items */}
+            <div className="space-y-6 md:col-span-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-md font-medium text-gray-900">Items</h3>
+                <button
+                  type="button"
+                  onClick={addItem}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Add Item
+                </button>
+              </div>
+              
+              {formData.items.length === 0 ? (
+                <div className="text-center py-4 border border-dashed border-gray-300 rounded-md">
+                  <p className="text-sm text-gray-500">No items added yet. Click "Add Item" to start.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-300">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-3 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th scope="col" className="px-3 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                        <th scope="col" className="px-3 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                        <th scope="col" className="px-3 py-3.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                          <span className="sr-only">Actions</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {formData.items.map((item, index) => (
+                        <tr key={index}>
+                          <td className="px-3 py-2">
+                            <input
+                              type="text"
+                              value={item.description}
+                              onChange={(e) => updateItem(index, 'description', e.target.value)}
+                              placeholder="Item description"
+                              className="block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              min="1"
+                              value={item.quantity}
+                              onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value))}
+                              className="block w-20 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={item.unitPrice}
+                              onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value))}
+                              className="block w-24 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            />
+                          </td>
+                          <td className="px-3 py-2 text-sm">
+                            KSh {item.total?.toLocaleString() || 0}
+                          </td>
+                          <td className="px-3 py-2 text-right text-sm font-medium">
+                            <button
+                              type="button"
+                              onClick={() => removeItem(index)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      <tr className="bg-gray-50">
+                        <td colSpan={3} className="px-3 py-2 text-right text-sm font-medium">Total:</td>
+                        <td className="px-3 py-2 text-sm font-bold">
+                          KSh {calculateTotal().toLocaleString()}
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Additional Details */}
+            <div className="space-y-6 md:col-span-2">
+              <h3 className="text-md font-medium text-gray-900">Additional Details</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+                    Total Amount (KSh) (Optional)
+                  </label>
+                  <input
+                    type="number"
+                    name="amount"
+                    id="amount"
+                    min="0"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={handleChange}
+                    placeholder={`${calculateTotal()}`}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">If left blank, will use the sum of items.</p>
+                </div>
+
+                <div>
+                  <label htmlFor="validDays" className="block text-sm font-medium text-gray-700">
+                    Valid For (Days) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="validDays"
+                    id="validDays"
+                    min="1"
+                    required
+                    value={formData.validDays}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+                    Status <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    required
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="sent">Ready to Send</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+                  Internal Notes
+                </label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  rows={2}
+                  value={formData.notes}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  placeholder="Add any internal notes about this proposal"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-primary-400 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Creating...' : 'Create Proposal'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
