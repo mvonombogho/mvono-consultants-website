@@ -1,233 +1,212 @@
-"use client";
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 import { 
-  LayoutDashboard, Users, FileText, CreditCard, Settings, LogOut,
-  Menu, X, ChevronDown, Briefcase, Calendar, BarChart3, Buildings, 
-  ListTodo, CheckSquare, Mail, BarChart, Target
+  LayoutDashboard, 
+  Users, 
+  ClipboardList, 
+  Wrench, 
+  FileText, 
+  ChevronDown, 
+  ChevronRight,
+  BarChart4,
+  CreditCard,
+  RefreshCw,
+  Receipt,
+  BellRing,
+  Calendar,
+  Settings,
+  HelpCircle,
+  LogOut
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-type SidebarLink = {
-  label: string;
-  href: string;
+type SidebarItemType = {
+  title: string;
+  href?: string;
   icon: React.ReactNode;
   submenu?: {
-    label: string;
+    title: string;
     href: string;
   }[];
 };
 
-const sidebarLinks: SidebarLink[] = [
-  {
-    label: 'Dashboard',
-    href: '/admin',
-    icon: <LayoutDashboard className="h-5 w-5" />,
-  },
-  {
-    label: 'Clients',
-    href: '/admin/clients',
-    icon: <Users className="h-5 w-5" />,
-    submenu: [
-      { label: 'All Clients', href: '/admin/clients' },
-      { label: 'Add New Client', href: '/admin/clients/new' },
-    ],
-  },
-  {
-    label: 'Projects',
-    href: '/admin/projects',
-    icon: <Briefcase className="h-5 w-5" />,
-    submenu: [
-      { label: 'All Projects', href: '/admin/projects' },
-      { label: 'Add New Project', href: '/admin/projects/new' },
-      { label: 'Project Management', href: '/admin/projects/management' },
-    ],
-  },
-  {
-    label: 'Invoices',
-    href: '/admin/invoices',
-    icon: <FileText className="h-5 w-5" />,
-    submenu: [
-      { label: 'All Invoices', href: '/admin/invoices' },
-      { label: 'Create Invoice', href: '/admin/invoices/new' },
-    ],
-  },
-  {
-    label: 'Finance',
-    href: '/admin/finance',
-    icon: <CreditCard className="h-5 w-5" />,
-    submenu: [
-      { label: 'Overview', href: '/admin/finance' },
-      { label: 'Payments', href: '/admin/finance/payments' },
-      { label: 'Expenses', href: '/admin/finance/expenses' },
-    ],
-  },
-  {
-    label: 'Subcontractors',
-    href: '/admin/subcontractors',
-    icon: <Buildings className="h-5 w-5" />,
-  },
-  {
-    label: 'Calendar',
-    href: '/admin/calendar',
-    icon: <Calendar className="h-5 w-5" />,
-  },
-  {
-    label: 'Marketing',
-    href: '/admin/marketing',
-    icon: <BarChart className="h-5 w-5" />,
-    submenu: [
-      { label: 'Campaigns', href: '/admin/marketing/campaigns' },
-      { label: 'Customer Segments', href: '/admin/marketing/segments' },
-      { label: 'Email Management', href: '/admin/marketing/emails' },
-    ],
-  },
-  {
-    label: 'Documents',
-    href: '/admin/documents',
-    icon: <FileText className="h-5 w-5" />,
-  },
-  {
-    label: 'Schedule',
-    href: '/admin/schedule',
-    icon: <Calendar className="h-5 w-5" />,
-  },
-  {
-    label: 'Reports',
-    href: '/admin/reports',
-    icon: <BarChart3 className="h-5 w-5" />,
-  },
-  {
-    label: 'Settings',
-    href: '/admin/settings',
-    icon: <Settings className="h-5 w-5" />,
-  },
-];
-
 export default function Sidebar() {
   const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
-  
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
-  
-  // Check if a link is active
-  const isLinkActive = (href: string) => {
-    if (href === '/admin') {
-      return pathname === '/admin';
+
+  const toggleSubmenu = (title: string) => {
+    setOpenSubmenu(prev => prev === title ? null : title);
+  };
+
+  const isActive = (path: string) => {
+    if (path === '/admin' && pathname === '/admin') {
+      return true;
     }
-    return pathname.startsWith(href);
+    return pathname.startsWith(path) && path !== '/admin';
   };
-  
-  // Toggle submenu
-  const toggleSubmenu = (label: string) => {
-    if (openSubmenu === label) {
-      setOpenSubmenu(null);
-    } else {
-      setOpenSubmenu(label);
-    }
-  };
-  
-  const handleSignOut = async () => {
-    await signOut({ redirect: true, callbackUrl: '/login' });
-  };
-  
+
+  const sidebarItems: SidebarItemType[] = [
+    {
+      title: 'Dashboard',
+      href: '/admin',
+      icon: <LayoutDashboard className="h-5 w-5" />
+    },
+    {
+      title: 'Clients',
+      href: '/admin/clients',
+      icon: <Users className="h-5 w-5" />
+    },
+    {
+      title: 'Finance',
+      icon: <CreditCard className="h-5 w-5" />,
+      submenu: [
+        { title: 'Overview', href: '/admin/finance' },
+        { title: 'Invoices', href: '/admin/finance/invoices' },
+        { title: 'Quotations', href: '/admin/finance/quotations' },
+        { title: 'Payments', href: '/admin/finance/payments' },
+        { title: 'Client Statements', href: '/admin/finance/client-statements' },
+        { title: 'Reports', href: '/admin/finance/reports' }
+      ]
+    },
+    {
+      title: 'Projects',
+      href: '/admin/projects',
+      icon: <ClipboardList className="h-5 w-5" />
+    },
+    {
+      title: 'Services',
+      href: '/admin/services',
+      icon: <Wrench className="h-5 w-5" />
+    },
+    {
+      title: 'Documents',
+      href: '/admin/documents',
+      icon: <FileText className="h-5 w-5" />
+    },
+    {
+      title: 'Schedule',
+      href: '/admin/schedule',
+      icon: <Calendar className="h-5 w-5" />
+    },
+    {
+      title: 'Subcontractors',
+      href: '/admin/subcontractors',
+      icon: <Users className="h-5 w-5" />
+    },
+    {
+      title: 'Marketing',
+      icon: <BarChart4 className="h-5 w-5" />,
+      submenu: [
+        { title: 'Dashboard', href: '/admin/marketing' },
+        { title: 'Campaigns', href: '/admin/marketing/campaigns' },
+        { title: 'Leads', href: '/admin/marketing/leads' },
+        { title: 'Analytics', href: '/admin/marketing/analytics' }
+      ]
+    },
+  ];
+
   return (
-    <>
-      {/* Mobile Menu Button */}
-      <div className="fixed top-4 left-4 z-50 lg:hidden">
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="bg-blue-600 text-white p-2 rounded-md"
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+    <div className="h-full flex flex-col bg-white border-r">
+      <div className="py-6 px-4 border-b">
+        <h2 className="text-lg font-semibold text-primary">Mvono Consultants</h2>
       </div>
       
-      {/* Sidebar Container */}
-      <aside 
-        className={`bg-blue-900 text-white fixed top-0 bottom-0 left-0 z-40 w-64 transition-transform duration-300 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} overflow-y-auto lg:sticky`}
-      >
-        {/* Logo */}
-        <div className="p-4 border-b border-blue-800">
-          <Link href="/admin" className="flex items-center">
-            <h1 className="text-xl font-bold">MVONO<span className="text-blue-400">ADMIN</span></h1>
-          </Link>
-        </div>
-        
-        {/* Navigation */}
-        <nav className="py-4">
-          <ul className="space-y-1 px-2">
-            {sidebarLinks.map((link) => (
-              <li key={link.label}>
-                {link.submenu ? (
-                  <div className="mb-1">
+      <div className="flex-1 overflow-y-auto py-4">
+        <nav className="px-2 space-y-1">
+          {sidebarItems.map((item) => {
+            const hasSubmenu = !!item.submenu?.length;
+            const isSubmenuOpen = openSubmenu === item.title;
+            const isItemActive = item.href ? isActive(item.href) : item.submenu?.some(subitem => isActive(subitem.href));
+            
+            return (
+              <div key={item.title} className="mb-1">
+                {hasSubmenu ? (
+                  <div>
                     <button
-                      onClick={() => toggleSubmenu(link.label)}
-                      className={`flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium rounded-md transition-colors ${isLinkActive(link.href) ? 'bg-blue-800 text-white' : 'hover:bg-blue-800/60'}`}
+                      className={cn(
+                        "flex items-center w-full px-3 py-2 text-sm font-medium rounded-md group transition-colors",
+                        isItemActive
+                          ? "text-primary bg-primary/10"
+                          : "text-gray-700 hover:bg-gray-100"
+                      )}
+                      onClick={() => toggleSubmenu(item.title)}
                     >
-                      <div className="flex items-center">
-                        {link.icon}
-                        <span className="ml-3">{link.label}</span>
+                      <div className="flex items-center flex-1">
+                        {item.icon}
+                        <span className="ml-3">{item.title}</span>
                       </div>
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform ${openSubmenu === link.label ? 'rotate-180' : ''}`}
-                      />
+                      {isSubmenuOpen ? (
+                        <ChevronDown className="h-4 w-4 ml-2" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 ml-2" />
+                      )}
                     </button>
                     
-                    {/* Submenu */}
-                    {(openSubmenu === link.label || isLinkActive(link.href)) && (
-                      <ul className="mt-1 ml-4 pl-4 border-l border-blue-800 space-y-1">
-                        {link.submenu.map((subitem) => (
-                          <li key={subitem.href}>
-                            <Link
-                              href={subitem.href}
-                              className={`block px-4 py-2 text-sm rounded-md transition-colors ${pathname === subitem.href ? 'bg-blue-800/80 text-white' : 'text-blue-200 hover:bg-blue-800/40 hover:text-white'}`}
-                            >
-                              {subitem.label}
-                            </Link>
-                          </li>
+                    {isSubmenuOpen && (
+                      <div className="mt-1 ml-6 space-y-1">
+                        {item.submenu?.map(subitem => (
+                          <Link
+                            key={subitem.href}
+                            href={subitem.href}
+                            className={cn(
+                              "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                              isActive(subitem.href)
+                                ? "text-primary bg-primary/10"
+                                : "text-gray-700 hover:bg-gray-100"
+                            )}
+                          >
+                            <span className="text-sm">{subitem.title}</span>
+                          </Link>
                         ))}
-                      </ul>
+                      </div>
                     )}
                   </div>
                 ) : (
                   <Link
-                    href={link.href}
-                    className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors ${isLinkActive(link.href) ? 'bg-blue-800 text-white' : 'hover:bg-blue-800/60'}`}
+                    href={item.href || '#'}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                      isItemActive
+                        ? "text-primary bg-primary/10"
+                        : "text-gray-700 hover:bg-gray-100"
+                    )}
                   >
-                    {link.icon}
-                    <span className="ml-3">{link.label}</span>
+                    {item.icon}
+                    <span className="ml-3">{item.title}</span>
                   </Link>
                 )}
-              </li>
-            ))}
-          </ul>
+              </div>
+            );
+          })}
         </nav>
-        
-        {/* User Info & Logout */}
-        <div className="mt-auto p-4 border-t border-blue-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-blue-300">admin@mvono.co.ke</p>
-            </div>
-            <button
-              onClick={handleSignOut}
-              className="p-2 rounded-md hover:bg-blue-800 transition-colors"
-              title="Sign out"
-            >
-              <LogOut className="h-5 w-5" />
-            </button>
-          </div>
+      </div>
+      
+      <div className="p-4 border-t">
+        <div className="space-y-2">
+          <Link
+            href="/admin/settings"
+            className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <Settings className="h-5 w-5 mr-3" />
+            Settings
+          </Link>
+          <Link
+            href="/admin/help"
+            className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <HelpCircle className="h-5 w-5 mr-3" />
+            Help & Support
+          </Link>
+          <Link
+            href="/api/auth/signout"
+            className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <LogOut className="h-5 w-5 mr-3" />
+            Sign Out
+          </Link>
         </div>
-      </aside>
-    </>
+      </div>
+    </div>
   );
 }
