@@ -1,103 +1,107 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 
-// GET: Retrieve market position data
-export async function GET(req: Request) {
+// GET handler to fetch all market positions
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthenticated" },
+        { status: 401 }
+      );
     }
     
-    const url = new URL(req.url);
-    const year = url.searchParams.get('year');
-    const quarter = url.searchParams.get('quarter');
-    const industry = url.searchParams.get('industry');
-    
-    let whereClause: any = {};
-    
-    if (year) {
-      whereClause.year = parseInt(year);
-    }
-    
-    if (quarter) {
-      whereClause.quarter = parseInt(quarter);
-    }
-    
-    if (industry) {
-      whereClause.industry = industry;
-    }
-    
+    // Query all market positions
     const marketPositions = await prisma.marketPosition.findMany({
-      where: whereClause,
       orderBy: [
-        { year: 'desc' },
-        { quarter: 'desc' },
+        {
+          year: 'desc',
+        },
+        {
+          quarter: 'desc',
+        },
       ],
     });
     
-    return NextResponse.json(marketPositions);
+    return NextResponse.json({ success: true, marketPositions });
   } catch (error) {
-    console.error('Error fetching market positions:', error);
-    return NextResponse.json({ error: 'Failed to fetch market positions' }, { status: 500 });
+    console.error("Error fetching market positions:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch market positions" },
+      { status: 500 }
+    );
   }
 }
 
-// POST: Create a new market position entry
-export async function POST(req: Request) {
+// POST handler to create a new market position
+export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthenticated" },
+        { status: 401 }
+      );
     }
     
-    const data = await req.json();
+    const body = await req.json();
     
     // Validate required fields
-    if (typeof data.year !== 'number' || typeof data.quarter !== 'number' || !data.industry || typeof data.marketSize !== 'number' || typeof data.companyShare !== 'number') {
+    if (!body.year || !body.quarter || !body.industry || body.marketSize === undefined || body.companyShare === undefined) {
       return NextResponse.json(
-        { error: 'Missing or invalid required fields: year, quarter, industry, marketSize, and companyShare are required' },
+        { success: false, message: "Missing required fields" },
         { status: 400 }
       );
     }
     
-    // Check if entry already exists for this year/quarter/industry
-    const existingEntry = await prisma.marketPosition.findFirst({
+    // Check if a market position already exists for this year, quarter, and industry
+    const existingPosition = await prisma.marketPosition.findFirst({
       where: {
-        year: data.year,
-        quarter: data.quarter,
-        industry: data.industry,
+        year: body.year,
+        quarter: body.quarter,
+        industry: body.industry,
       },
     });
     
-    if (existingEntry) {
+    if (existingPosition) {
       return NextResponse.json(
-        { error: 'A market position entry already exists for this year, quarter, and industry' },
-        { status: 409 } // Conflict
+        { 
+          success: false, 
+          message: `A market position for ${body.industry} in Q${body.quarter} ${body.year} already exists` 
+        },
+        { status: 409 }
       );
     }
     
-    // Create new market position entry
+    // Create the market position
     const newMarketPosition = await prisma.marketPosition.create({
       data: {
-        year: data.year,
-        quarter: data.quarter,
-        industry: data.industry,
-        marketSize: data.marketSize,
-        companyShare: data.companyShare,
-        topCompetitors: data.topCompetitors,
-        growthRate: data.growthRate,
-        notes: data.notes,
+        year: body.year,
+        quarter: body.quarter,
+        industry: body.industry,
+        marketSize: body.marketSize,
+        companyShare: body.companyShare,
+        growthRate: body.growthRate || 0,
+        topCompetitors: body.topCompetitors || '[]',
+        notes: body.notes || '',
       },
     });
     
-    return NextResponse.json(newMarketPosition, { status: 201 });
+    return NextResponse.json({ 
+      success: true, 
+      message: "Market position created successfully",
+      marketPosition: newMarketPosition 
+    });
   } catch (error) {
-    console.error('Error creating market position:', error);
-    return NextResponse.json({ error: 'Failed to create market position' }, { status: 500 });
+    console.error("Error creating market position:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to create market position" },
+      { status: 500 }
+    );
   }
 }
