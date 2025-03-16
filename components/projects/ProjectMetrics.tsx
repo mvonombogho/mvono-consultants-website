@@ -99,3 +99,103 @@ const ProjectMetrics = ({ project }) => {
   const formatNumber = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
+
+  const renderTaskStatusChart = () => {
+    return (
+      <div className="metrics-section bg-white rounded-lg shadow-sm p-5 mb-5">
+        <h3 className="text-lg font-semibold mb-4">Task Status Distribution</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={TASK_STATUS_DATA}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                paddingAngle={2}
+                dataKey="value"
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                labelLine={false}
+              >
+                {TASK_STATUS_DATA.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip 
+                formatter={(value, name) => [value, name]} 
+                contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} 
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+          {TASK_STATUS_DATA.map((status, index) => (
+            <div key={index} className="flex items-center">
+              <div className="w-3 h-3 mr-2 rounded" style={{ backgroundColor: status.color }}></div>
+              <div>
+                <div className="text-xs text-gray-500">{status.name}</div>
+                <div className="font-medium">{status.value}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTaskPriorityChart = () => {
+    return (
+      <div className="metrics-section bg-white rounded-lg shadow-sm p-5 mb-5">
+        <h3 className="text-lg font-semibold mb-4">Task Priority Distribution</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={TASK_PRIORITY_DATA}
+              layout="vertical"
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis type="category" dataKey="name" />
+              <Tooltip 
+                formatter={(value, name, props) => [value, 'Tasks']} 
+                contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} 
+              />
+              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                {TASK_PRIORITY_DATA.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
+
+  const renderWeeklyProgressChart = () => {
+    return (
+      <div className="metrics-section bg-white rounded-lg shadow-sm p-5 mb-5">
+        <h3 className="text-lg font-semibold mb-4">Weekly Progress</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={WEEKLY_PROGRESS_DATA}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" />
+              <YAxis />
+              <Tooltip 
+                contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} 
+              />
+              <Legend />
+              <Area type="monotone" dataKey="completed" stackId="1" stroke="#4ade80" fill="#4ade80" />
+              <Area type="monotone" dataKey="added" stackId="2" stroke="#60a5fa" fill="#60a5fa" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
