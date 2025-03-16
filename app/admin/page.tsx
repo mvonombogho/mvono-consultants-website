@@ -1,81 +1,67 @@
 "use client";
 
-import { Suspense } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Dashboard from '@/components/admin/Dashboard';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
-export default function AdminDashboardPage() {
-  return (
-    <AdminLayout title="Dashboard">
-      <Suspense fallback={<DashboardSkeleton />}>
-        <Dashboard />
-      </Suspense>
-    </AdminLayout>
-  );
-}
+export default function AdminPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-function DashboardSkeleton() {
-  return (
-    <div className="space-y-8">
-      {/* Stats Cards Skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
-            <div className="flex justify-between">
-              <div className="space-y-3">
-                <div className="h-3 w-24 bg-gray-200 rounded"></div>
-                <div className="h-8 w-16 bg-gray-300 rounded"></div>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-gray-200"></div>
-            </div>
-            <div className="mt-4">
-              <div className="h-3 w-32 bg-gray-200 rounded"></div>
-            </div>
-          </div>
-        ))}
+  useEffect(() => {
+    // If user is not admin, redirect to dashboard
+    if (status === 'authenticated' && session?.user?.role !== 'admin') {
+      router.push('/dashboard');
+    }
+    
+    // If not authenticated, middleware will redirect to login
+  }, [session, status, router]);
+
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
+    );
+  }
+
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+      <p className="mb-4">Welcome to the admin dashboard, {session?.user?.name}!</p>
       
-      {/* Activity & Clients Skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 bg-white rounded-lg shadow p-6">
-          <div className="h-5 w-32 bg-gray-200 rounded mb-6"></div>
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex space-x-3">
-                <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded"></div>
-                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold mb-4">User Management</h2>
+          <p className="text-gray-600 mb-4">Manage user accounts and permissions</p>
+          <button 
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+            onClick={() => router.push('/admin/users')}
+          >
+            Manage Users
+          </button>
         </div>
         
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div className="h-5 w-32 bg-gray-200 rounded"></div>
-              <div className="h-4 w-24 bg-gray-200 rounded"></div>
-            </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              {[...Array(2)].map((_, i) => (
-                <div key={i} className="h-40 bg-gray-200 rounded"></div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div className="h-5 w-32 bg-gray-200 rounded"></div>
-              <div className="h-4 w-24 bg-gray-200 rounded"></div>
-            </div>
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded"></div>
-              ))}
-            </div>
-          </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold mb-4">System Settings</h2>
+          <p className="text-gray-600 mb-4">Configure system-wide settings</p>
+          <button 
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+            onClick={() => router.push('/admin/settings')}
+          >
+            System Settings
+          </button>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold mb-4">Activity Logs</h2>
+          <p className="text-gray-600 mb-4">View system and user activity logs</p>
+          <button 
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+            onClick={() => router.push('/admin/logs')}
+          >
+            View Logs
+          </button>
         </div>
       </div>
     </div>
