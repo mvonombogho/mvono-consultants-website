@@ -1,172 +1,121 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-// GET /api/clients/[id] - Get a specific client by ID
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// GET /api/clients/[id] - Get a specific client
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const session = await getServerSession(authOptions);
-
-    // Check authentication
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { id } = params;
-
-    // Get client with related invoices and projects
-    const client = await db.client.findUnique({
-      where: { id },
+    const client = await prisma.client.findUnique({
+      where: { id: params.id },
       include: {
-        invoices: {
-          orderBy: { issueDate: "desc" },
-          take: 5,
-        },
-        projects: {
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        },
+        invoices: true,
+        projects: true,
       },
     });
-
+    
     if (!client) {
-      return NextResponse.json({ error: "Client not found" }, { status: 404 });
-    }
-
-    // Get client statistics
-    const stats = {
-      totalInvoices: await db.invoice.count({ where: { clientId: id } }),
-      totalProjects: await db.project.count({ where: { clientId: id } }),
-      totalRevenue: await db.invoice.aggregate({
-        where: { clientId: id, status: "paid" },
-        _sum: { totalAmount: true },
-      }),
-      pendingPayments: await db.invoice.aggregate({
-        where: {
-          clientId: id,
-          status: { in: ["sent", "overdue"] },
-        },
-        _sum: { totalAmount: true },
-      }),
-    };
-
-    return NextResponse.json({
-      ...client,
-      stats: {
-        totalInvoices: stats.totalInvoices,
-        totalProjects: stats.totalProjects,
-        totalRevenue: stats.totalRevenue._sum.totalAmount || 0,
-        pendingPayments: stats.pendingPayments._sum.totalAmount || 0,
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching client:", error);
-    return NextResponse.json(
-      { error: "Error fetching client" },
-      { status: 500 }
-    );
-  }
-}
-
-// PUT /api/clients/[id] - Update a specific client
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    // Check authentication
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { id } = params;
-    const data = await req.json();
-
-    // Check if client exists
-    const existingClient = await db.client.findUnique({ where: { id } });
-    if (!existingClient) {
-      return NextResponse.json({ error: "Client not found" }, { status: 404 });
-    }
-
-    // Update client
-    const updatedClient = await db.client.update({
-      where: { id },
-      data: {
-        name: data.name !== undefined ? data.name : existingClient.name,
-        email: data.email !== undefined ? data.email : existingClient.email,
-        phone: data.phone !== undefined ? data.phone : existingClient.phone,
-        address: data.address !== undefined ? data.address : existingClient.address,
-        kraPin: data.kraPin !== undefined ? data.kraPin : existingClient.kraPin,
-        industry: data.industry !== undefined ? data.industry : existingClient.industry,
-        contactPerson: data.contactPerson !== undefined ? data.contactPerson : existingClient.contactPerson,
-        contactPosition: data.contactPosition !== undefined ? data.contactPosition : existingClient.contactPosition,
-        notes: data.notes !== undefined ? data.notes : existingClient.notes,
-      },
-    });
-
-    return NextResponse.json(updatedClient);
-  } catch (error) {
-    console.error("Error updating client:", error);
-    return NextResponse.json(
-      { error: "Error updating client" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/clients/[id] - Delete a specific client
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    // Check authentication
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { id } = params;
-
-    // Check if client exists
-    const existingClient = await db.client.findUnique({ where: { id } });
-    if (!existingClient) {
-      return NextResponse.json({ error: "Client not found" }, { status: 404 });
-    }
-
-    // Check if client has associated invoices or projects
-    const invoiceCount = await db.invoice.count({ where: { clientId: id } });
-    const projectCount = await db.project.count({ where: { clientId: id } });
-
-    if (invoiceCount > 0 || projectCount > 0) {
       return NextResponse.json(
-        {
-          error: "Cannot delete client with associated invoices or projects",
-          invoiceCount,
-          projectCount,
-        },
+        { error: 'Client not found' },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json(client);
+  } catch (error) {
+    console.error(`Error fetching client ${params.id}:`, error);
+    return NextResponse.json(
+      { error: 'Failed to fetch client' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT /api/clients/[id] - Update a client
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const data = await request.json();
+    
+    // Validate required fields
+    if (!data.name) {
+      return NextResponse.json(
+        { error: 'Client name is required' },
         { status: 400 }
       );
     }
-
-    // Delete client
-    await db.client.delete({ where: { id } });
-
-    return NextResponse.json(
-      { message: "Client deleted successfully" },
-      { status: 200 }
-    );
+    
+    // Check if client exists
+    const existingClient = await prisma.client.findUnique({
+      where: { id: params.id },
+    });
+    
+    if (!existingClient) {
+      return NextResponse.json(
+        { error: 'Client not found' },
+        { status: 404 }
+      );
+    }
+    
+    const updatedClient = await prisma.client.update({
+      where: { id: params.id },
+      data: {
+        name: data.name,
+        email: data.email || null,
+        phone: data.phone || null,
+        address: data.address || null,
+        kraPin: data.kraPin || null,
+        industry: data.industry || null,
+        contactPerson: data.contactPerson || null,
+        contactPosition: data.contactPosition || null,
+        notes: data.notes || null,
+      },
+    });
+    
+    return NextResponse.json(updatedClient);
   } catch (error) {
-    console.error("Error deleting client:", error);
+    console.error(`Error updating client ${params.id}:`, error);
     return NextResponse.json(
-      { error: "Error deleting client" },
+      { error: 'Failed to update client' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/clients/[id] - Delete a client
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    // Check if client exists
+    const existingClient = await prisma.client.findUnique({
+      where: { id: params.id },
+      include: {
+        invoices: true,
+        projects: true,
+      },
+    });
+    
+    if (!existingClient) {
+      return NextResponse.json(
+        { error: 'Client not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Check for related data
+    if (existingClient.invoices.length > 0 || existingClient.projects.length > 0) {
+      return NextResponse.json(
+        { error: 'Cannot delete client with existing invoices or projects' },
+        { status: 400 }
+      );
+    }
+    
+    // Delete the client
+    await prisma.client.delete({
+      where: { id: params.id },
+    });
+    
+    return NextResponse.json({ message: 'Client deleted successfully' });
+  } catch (error) {
+    console.error(`Error deleting client ${params.id}:`, error);
+    return NextResponse.json(
+      { error: 'Failed to delete client' },
       { status: 500 }
     );
   }
