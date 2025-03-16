@@ -330,3 +330,259 @@ const NewActivityDialog = ({ leadId, onActivityCreated }) => {
     </Dialog>
   );
 };
+
+// Edit Lead Dialog component
+const EditLeadDialog = ({ lead, users, onLeadUpdated }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: lead.name,
+    company: lead.company || '',
+    email: lead.email || '',
+    phone: lead.phone || '',
+    source: lead.source,
+    status: lead.status,
+    priority: lead.priority || '',
+    notes: lead.notes || '',
+    assignedToId: lead.assignedToId || '',
+    estimatedValue: lead.estimatedValue || '',
+    industry: lead.industry || '',
+    nextContactDate: lead.nextContactDate ? new Date(lead.nextContactDate).toISOString().slice(0, 16) : '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/leads/${lead.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update lead');
+      }
+
+      const updatedLead = await response.json();
+      toast.success('Lead updated successfully');
+      setIsOpen(false);
+      onLeadUpdated(updatedLead);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Edit className="mr-2 h-4 w-4" />
+          Edit
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[525px]">
+        <DialogHeader>
+          <DialogTitle>Edit Lead</DialogTitle>
+          <DialogDescription>
+            Update the lead information.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <Label htmlFor="name" className="text-right">
+                  Name <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="company">Company</Label>
+                <Input
+                  id="company"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="industry">Industry</Label>
+                <Input
+                  id="industry"
+                  name="industry"
+                  value={formData.industry}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="source">
+                  Source <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.source}
+                  onValueChange={(value) => handleSelectChange('source', value)}
+                  required
+                >
+                  <SelectTrigger id="source">
+                    <SelectValue placeholder="Select source" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="website">Website</SelectItem>
+                    <SelectItem value="referral">Referral</SelectItem>
+                    <SelectItem value="cold-call">Cold Call</SelectItem>
+                    <SelectItem value="event">Event</SelectItem>
+                    <SelectItem value="social-media">Social Media</SelectItem>
+                    <SelectItem value="email">Email Campaign</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="status">
+                  Status <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => handleSelectChange('status', value)}
+                  required
+                >
+                  <SelectTrigger id="status">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="contacted">Contacted</SelectItem>
+                    <SelectItem value="qualified">Qualified</SelectItem>
+                    <SelectItem value="converted">Converted</SelectItem>
+                    <SelectItem value="closed-lost">Closed (Lost)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="priority">Priority</Label>
+                <Select
+                  value={formData.priority}
+                  onValueChange={(value) => handleSelectChange('priority', value)}
+                >
+                  <SelectTrigger id="priority">
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No priority</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="estimatedValue">Estimated Value (KES)</Label>
+                <Input
+                  id="estimatedValue"
+                  name="estimatedValue"
+                  type="number"
+                  value={formData.estimatedValue}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="assignedToId">Assign To</Label>
+                <Select
+                  value={formData.assignedToId}
+                  onValueChange={(value) => handleSelectChange('assignedToId', value)}
+                >
+                  <SelectTrigger id="assignedToId">
+                    <SelectValue placeholder="Select user" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Unassigned</SelectItem>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="nextContactDate">Next Contact Date</Label>
+                <Input
+                  id="nextContactDate"
+                  name="nextContactDate"
+                  type="datetime-local"
+                  value={formData.nextContactDate}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  rows={3}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Update Lead
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
