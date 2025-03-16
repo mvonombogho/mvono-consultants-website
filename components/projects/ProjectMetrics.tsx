@@ -199,3 +199,197 @@ const ProjectMetrics = ({ project }) => {
       </div>
     );
   };
+
+  const renderAssigneeWorkloadChart = () => {
+    return (
+      <div className="metrics-section bg-white rounded-lg shadow-sm p-5 mb-5">
+        <h3 className="text-lg font-semibold mb-4">Assignee Workload</h3>
+        <div className="h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={ASSIGNEE_WORKLOAD}
+              layout="vertical"
+              margin={{ top: 20, right: 30, left: 60, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis type="category" dataKey="name" />
+              <Tooltip 
+                contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} 
+              />
+              <Legend />
+              <Bar dataKey="completed" stackId="a" fill="#4ade80" name="Completed" />
+              <Bar dataKey="inProgress" stackId="a" fill="#60a5fa" name="In Progress" />
+              <Bar dataKey="pending" stackId="a" fill="#facc15" name="Pending" />
+              <Bar dataKey="blocked" stackId="a" fill="#f87171" name="Blocked" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
+
+  const renderRiskFactorsChart = () => {
+    return (
+      <div className="metrics-section bg-white rounded-lg shadow-sm p-5 mb-5">
+        <h3 className="text-lg font-semibold mb-4">Risk Factors</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={RISK_FACTORS}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis label={{ value: 'Risk Level (%)', angle: -90, position: 'insideLeft' }} />
+              <Tooltip 
+                formatter={(value) => [`${value}%`, 'Risk Level']} 
+                contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} 
+              />
+              <Bar dataKey="risk" fill="#f87171" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSummaryCards = () => {
+    const completionPercentage = calculateCompletionPercentage();
+    const daysRemaining = calculateDaysRemaining();
+    const projectDuration = calculateProjectDuration();
+    
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="metrics-section bg-white rounded-lg shadow-sm p-5">
+          <h3 className="text-sm font-medium text-gray-500 mb-1">Project Completion</h3>
+          <div className="flex items-end gap-2">
+            <div className="text-3xl font-bold">{completionPercentage}%</div>
+            <div className="text-sm text-gray-500 mb-1">complete</div>
+          </div>
+          <div className="mt-2 bg-gray-200 rounded-full h-2.5">
+            <div 
+              className="bg-blue-600 h-2.5 rounded-full" 
+              style={{ width: `${completionPercentage}%` }}
+            ></div>
+          </div>
+        </div>
+        
+        <div className="metrics-section bg-white rounded-lg shadow-sm p-5">
+          <h3 className="text-sm font-medium text-gray-500 mb-1">Time Remaining</h3>
+          <div className="flex items-end gap-2">
+            <div className="text-3xl font-bold">{daysRemaining}</div>
+            <div className="text-sm text-gray-500 mb-1">days left</div>
+          </div>
+          <div className="mt-2 bg-gray-200 rounded-full h-2.5">
+            <div 
+              className="bg-green-500 h-2.5 rounded-full" 
+              style={{ width: `${100 - ((daysRemaining / projectDuration) * 100)}%` }}
+            ></div>
+          </div>
+        </div>
+        
+        <div className="metrics-section bg-white rounded-lg shadow-sm p-5">
+          <h3 className="text-sm font-medium text-gray-500 mb-1">Total Tasks</h3>
+          <div className="flex items-end gap-2">
+            <div className="text-3xl font-bold">56</div>
+            <div className="text-sm text-gray-500 mb-1">tasks</div>
+          </div>
+          <div className="mt-2 flex gap-1 text-xs">
+            <div className="bg-green-500 text-white px-2 py-1 rounded">
+              16 completed
+            </div>
+            <div className="bg-blue-500 text-white px-2 py-1 rounded">
+              24 in progress
+            </div>
+            <div className="bg-yellow-500 text-white px-2 py-1 rounded">
+              12 pending
+            </div>
+            <div className="bg-red-500 text-white px-2 py-1 rounded">
+              4 blocked
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderMetricsNav = () => {
+    const navItems = [
+      { id: 'overview', label: 'Overview' },
+      { id: 'tasks', label: 'Tasks' },
+      { id: 'resources', label: 'Resources' },
+      { id: 'risks', label: 'Risks' }
+    ];
+    
+    return (
+      <div className="flex border-b border-gray-200 mb-6 overflow-x-auto">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            className={`py-3 px-4 border-b-2 font-medium text-sm whitespace-nowrap ${
+              activeSection === item.id
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+            onClick={() => setActiveSection(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {renderMetricsNav()}
+      
+      <div className="metrics-container">
+        {activeSection === 'overview' && (
+          <>
+            {renderSummaryCards()}
+            {renderTaskStatusChart()}
+            {renderWeeklyProgressChart()}
+          </>
+        )}
+        
+        {activeSection === 'tasks' && (
+          <>
+            {renderTaskStatusChart()}
+            {renderTaskPriorityChart()}
+            {renderWeeklyProgressChart()}
+          </>
+        )}
+        
+        {activeSection === 'resources' && (
+          <>
+            {renderAssigneeWorkloadChart()}
+            <div className="metrics-section bg-white rounded-lg shadow-sm p-5 mb-5">
+              <h3 className="text-lg font-semibold mb-4">Resource Allocation</h3>
+              <p className="text-gray-500 mb-4">Detailed resource allocation data would be shown here including team members, equipment, and other resources utilized in the project.</p>
+              <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
+                Resource allocation details would be implemented here based on actual project data.
+              </div>
+            </div>
+          </>
+        )}
+        
+        {activeSection === 'risks' && (
+          <>
+            {renderRiskFactorsChart()}
+            <div className="metrics-section bg-white rounded-lg shadow-sm p-5 mb-5">
+              <h3 className="text-lg font-semibold mb-4">Risk Management Plan</h3>
+              <p className="text-gray-500 mb-4">Detailed risk management strategies and mitigation plans would be shown here for each identified risk factor.</p>
+              <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
+                Risk management plan details would be implemented here based on actual project data.
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProjectMetrics;
