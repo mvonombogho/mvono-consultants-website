@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, FileText, BarChart, Calendar, Settings,
   CreditCard, PieChart, Tag, Target, Zap, Award, Shield, ChevronDown,
   Menu, X, ListChecks, Briefcase, FileSpreadsheet, Mail, MailPlus, MegaphoneIcon,
-  UserCheck
+  UserCheck, Building2, Clock, AlertTriangle, FileCheck2
 } from 'lucide-react';
 
 type SidebarItem = {
@@ -110,21 +110,24 @@ const sidebarItems: SidebarItem[] = [
       { title: 'Proposals', href: '/dashboard/sales/proposals' },
     ],
   },
+  // Phase 7: Industry-Specific Features
   {
-    title: 'Compliance',
+    title: 'Compliance & Certs',
     icon: <Shield className="h-5 w-5" />,
     submenu: [
-      { title: 'Compliance Calendar', href: '/dashboard/compliance/calendar' },
-      { title: 'Certifications', href: '/dashboard/compliance/certifications' },
-      { title: 'Service Anniversaries', href: '/dashboard/compliance/anniversaries' },
+      { title: 'Compliance Calendar', href: '/dashboard/compliance' },
+      { title: 'Certifications', href: '/dashboard/certifications' },
+      { title: 'Service Anniversaries', href: '/dashboard/anniversaries' },
     ],
   },
+  // Phase 7: Competitive Intelligence
   {
-    title: 'Competition',
+    title: 'Market Intelligence',
     icon: <Award className="h-5 w-5" />,
     submenu: [
-      { title: 'Competitor Tracking', href: '/dashboard/competition/tracking' },
-      { title: 'Market Position', href: '/dashboard/competition/market-position' },
+      { title: 'Competitor Tracking', href: '/dashboard/competitors' },
+      { title: 'Market Position', href: '/dashboard/market-position' },
+      { title: 'Win/Loss Analysis', href: '/dashboard/win-loss' },
     ],
   },
   {
