@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -87,11 +88,33 @@ export default function MarketPositionDashboard() {
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full max-w-md grid-cols-3">
+        <TabsList className="grid w-full max-w-md grid-cols-4">
+          <TabsTrigger value="marketMap">Market Map</TabsTrigger>
           <TabsTrigger value="marketShare">Market Share</TabsTrigger>
           <TabsTrigger value="winLoss">Win/Loss Analysis</TabsTrigger>
           <TabsTrigger value="strengths">Strengths Comparison</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="marketMap" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Competitive Market Positioning</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <div className="relative w-full max-w-md h-80">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Image 
+                    src="/images/market-position.svg"
+                    alt="Market Position Map"
+                    width={400}
+                    height={300}
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
         
         <TabsContent value="marketShare" className="mt-6">
           <Card>
