@@ -1,40 +1,17 @@
-  const handleDeleteLead = async () => {
-    try {
-      setDeleteLoading(true);
-      const response = await fetch(`/api/leads/${params.id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete lead');
-      }
-      
-      toast.success('Lead deleted successfully');
-      router.push('/leads');
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setDeleteLoading(false);
-      setDeleteDialogOpen(false);
-    }
-  };
-
-  const formatPriority = (priority) => {
-    switch (priority) {
-      case 'high':
-        return <Badge variant="destructive">High</Badge>;
-      case 'medium':
-        return <Badge variant="warning">Medium</Badge>;
-      case 'low':
-        return <Badge variant="secondary">Low</Badge>;
-      default:
-        return <span className="text-muted-foreground">None</span>;
-    }
-  };
-
-  const formatSource = (source) => {
-    return source
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
+  if (!lead) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <AlertTriangle className="h-12 w-12 text-destructive" />
+        <h2 className="text-2xl font-bold">Lead not found</h2>
+        <Button onClick={() => router.push('/leads')}>Back to Leads</Button>
+      </div>
+    );
+  }
