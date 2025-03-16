@@ -25,6 +25,11 @@ model User {
   emailMessages EmailMessage[] @relation("MessageSender")
   complianceEvents ComplianceEvent[] @relation("ComplianceCreator")
   competitorNotes CompetitorNote[] @relation("CompetitorNoteCreator")
+  leads         Lead[]        @relation("LeadAssignee")
+  leadActivities LeadActivity[] @relation("ActivityPerformer")
+  salesDeals    SalesDeal[]   @relation("DealOwner")
+  dealActivities DealActivity[] @relation("DealActivityPerformer")
+  proposals     Proposal[]    @relation("ProposalCreator")
 }
 
 // Client model
@@ -52,6 +57,8 @@ model Client {
   serviceAnniversaries ServiceAnniversary[] // Relation to service anniversaries
   certifications   Certification[] // Relation to certifications
   dealOpportunities DealOpportunity[] // Relation to deal opportunities
+  salesDeals      SalesDeal[]    // Relation to sales deals
+  proposals       Proposal[]     // Relation to proposals
 }
 
 // Subcontractor model
@@ -181,6 +188,7 @@ model Document {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   certifications   Certification[] // Relation to certifications
+  proposals        Proposal[]     // Relation to proposals
 }
 
 // Schedule model for service scheduling
@@ -213,6 +221,122 @@ model Schedule {
   color           String?        // For calendar display
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+}
+
+// ------------- Phase 5: Sales & Marketing Fundamentals Models -------------
+
+// Lead model for lead management
+model Lead {
+  id              String        @id @default(uuid())
+  name            String
+  company         String?
+  email           String?
+  phone           String?
+  source          String        // website, referral, cold-call, event, etc.
+  status          String        // new, contacted, qualified, converted, closed-lost
+  priority        String?       // high, medium, low
+  notes           String?
+  assignedToId    String?
+  assignedTo      User?         @relation("LeadAssignee", fields: [assignedToId], references: [id])
+  conversionDate  DateTime?     // When the lead became a client (if converted)
+  lastContact     DateTime?
+  nextContactDate DateTime?
+  tags            String?       // Comma-separated tags
+  industry        String?
+  estimatedValue  Float?
+  dealOpportunityId String?     // Connection to a deal if the lead progresses
+  dealOpportunity DealOpportunity? @relation(fields: [dealOpportunityId], references: [id])
+  dealId          String?       // Connection to a sales deal
+  deal            SalesDeal?    @relation(fields: [dealId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  activities      LeadActivity[]
+}
+
+// Lead Activity model for tracking interactions
+model LeadActivity {
+  id              String        @id @default(uuid())
+  leadId          String
+  lead            Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  activityType    String        // email, call, meeting, note, task
+  description     String
+  date            DateTime
+  performedById   String
+  performedBy     User          @relation("ActivityPerformer", fields: [performedById], references: [id])
+  outcome         String?       // positive, negative, neutral
+  notes           String?
+  followUpDate    DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// Sales Deal model for sales pipeline
+model SalesDeal {
+  id              String        @id @default(uuid())
+  title           String
+  description     String?
+  stage           String        // prospecting, qualification, proposal, negotiation, closed-won, closed-lost
+  value           Float
+  probability     Float         // Probability of closing (0-100%)
+  expectedCloseDate DateTime
+  actualCloseDate DateTime?
+  clientId        String?
+  client          Client?       @relation(fields: [clientId], references: [id])
+  ownerId         String
+  owner           User          @relation("DealOwner", fields: [ownerId], references: [id])
+  activities      DealActivity[]
+  notes           String?
+  tags            String?       // Comma-separated tags
+  leadSource      String?       // Where the deal originated
+  competitors     String?       // Comma-separated competitor names
+  winReason       String?       // Reason for winning the deal
+  lossReason      String?       // Reason for losing the deal
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  leads           Lead[]        // Connected leads
+  proposals       Proposal[]    // Connected proposals
+}
+
+// Deal Activity model for tracking sales activities
+model DealActivity {
+  id              String        @id @default(uuid())
+  dealId          String
+  deal            SalesDeal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  activityType    String        // email, call, meeting, note, task
+  description     String
+  date            DateTime
+  performedById   String
+  performedBy     User          @relation("DealActivityPerformer", fields: [performedById], references: [id])
+  outcome         String?       // positive, negative, neutral
+  notes           String?
+  followUpDate    DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// Proposal model for proposal management
+model Proposal {
+  id              String        @id @default(uuid())
+  title           String
+  proposalNumber  String        @unique
+  version         Int           @default(1)
+  status          String        // draft, sent, accepted, rejected, expired
+  dealId          String?
+  deal            SalesDeal?    @relation(fields: [dealId], references: [id])
+  clientId        String?
+  client          Client?       @relation(fields: [clientId], references: [id])
+  createdById     String
+  createdBy       User          @relation("ProposalCreator", fields: [createdById], references: [id])
+  content         String?       // JSON string with proposal structure and content
+  sentDate        DateTime?
+  validUntil      DateTime?
+  totalValue      Float
+  notes           String?
+  feedback        String?       // Client feedback on the proposal
+  documentId      String?       // Connection to a document (PDF)
+  document        Document?     @relation(fields: [documentId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 // ------------- Phase 6: Advanced Marketing & Integration Models -------------
@@ -458,6 +582,7 @@ model DealOpportunity {
   winFactors          String?         // Factors contributing to winning (JSON)
   lossFactors         String?         // Factors contributing to losing (JSON)
   learnings           String?         // Learnings from the deal
+  leads               Lead[]          // Connected leads
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 }
