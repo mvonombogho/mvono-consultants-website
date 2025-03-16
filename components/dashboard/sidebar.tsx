@@ -88,6 +88,8 @@ const sidebarItems: SidebarItem[] = [
       { title: 'Create Campaign', href: '/marketing/new' },
       { title: 'Customer Segments', href: '/segments' },
       { title: 'Create Segment', href: '/segments/new' },
+      { title: 'Cross-Sell Opportunities', href: '/cross-sell' },
+      { title: 'Create Cross-Sell', href: '/cross-sell/new' },
     ],
   },
   {
