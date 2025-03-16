@@ -17,7 +17,10 @@ import {
   Calendar,
   Settings,
   HelpCircle,
-  LogOut
+  LogOut,
+  LineChart,
+  FolderArchive,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -80,14 +83,32 @@ export default function Sidebar() {
       icon: <Wrench className="h-5 w-5" />
     },
     {
+      title: 'Analytics',
+      icon: <LineChart className="h-5 w-5" />,
+      submenu: [
+        { title: 'Financial', href: '/admin/analytics/financial' },
+        { title: 'Performance', href: '/admin/analytics/performance' },
+        { title: 'KPI Dashboard', href: '/admin/analytics/kpi' },
+        { title: 'Reports', href: '/admin/analytics/reports' }
+      ]
+    },
+    {
       title: 'Documents',
-      href: '/admin/documents',
-      icon: <FileText className="h-5 w-5" />
+      icon: <FileText className="h-5 w-5" />,
+      submenu: [
+        { title: 'Repository', href: '/admin/documents/repository' },
+        { title: 'Certificates', href: '/admin/documents/certificates' },
+        { title: 'Templates', href: '/admin/documents/templates' }
+      ]
     },
     {
       title: 'Schedule',
-      href: '/admin/schedule',
-      icon: <Calendar className="h-5 w-5" />
+      icon: <Calendar className="h-5 w-5" />,
+      submenu: [
+        { title: 'Calendar', href: '/admin/schedule/calendar' },
+        { title: 'Bookings', href: '/admin/schedule/bookings' },
+        { title: 'Resources', href: '/admin/schedule/resources' }
+      ]
     },
     {
       title: 'Subcontractors',
