@@ -9,6 +9,7 @@ import PageContainer from '@/components/PageContainer';
 import CompetitorList from '@/components/competitor/CompetitorList';
 import CompetitorStats from '@/components/competitor/CompetitorStats';
 import CompetitorModal from '@/components/competitor/CompetitorModal';
+import MarketPositionDashboard from '@/components/competitor/MarketPositionDashboard';
 
 export default function CompetitorsPage() {
   const [competitors, setCompetitors] = useState([]);
@@ -65,9 +66,10 @@ export default function CompetitorsPage() {
       />
       
       <Tabs value={activeView} onValueChange={setActiveView} className="mt-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="list">List View</TabsTrigger>
           <TabsTrigger value="stats">Analytics</TabsTrigger>
+          <TabsTrigger value="market">Market Position</TabsTrigger>
         </TabsList>
         
         <TabsContent value="list" className="mt-6">
@@ -80,6 +82,10 @@ export default function CompetitorsPage() {
         
         <TabsContent value="stats" className="mt-6">
           <CompetitorStats competitors={competitors} isLoading={isLoading} />
+        </TabsContent>
+
+        <TabsContent value="market" className="mt-6">
+          <MarketPositionDashboard />
         </TabsContent>
       </Tabs>
       
