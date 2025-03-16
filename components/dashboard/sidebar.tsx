@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, Users, FileText, BarChart, Calendar, Settings,
   CreditCard, PieChart, Tag, Target, Zap, Award, Shield, ChevronDown,
-  Menu, X
+  Menu, X, ListChecks, Briefcase, FileSpreadsheet
 } from 'lucide-react';
 
 type SidebarItem = {
@@ -33,6 +33,7 @@ const sidebarItems: SidebarItem[] = [
     submenu: [
       { title: 'All Invoices', href: '/dashboard/invoices' },
       { title: 'Create Invoice', href: '/dashboard/invoices/create' },
+      { title: 'Client Statements', href: '/dashboard/finances/statements' },
       { title: 'Financial Reports', href: '/dashboard/finances/reports' },
       { title: 'Expenses', href: '/dashboard/finances/expenses' },
     ],
@@ -47,6 +48,24 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
+    title: 'Subcontractors',
+    icon: <Briefcase className="h-5 w-5" />,
+    submenu: [
+      { title: 'All Subcontractors', href: '/dashboard/subcontractors' },
+      { title: 'Add Subcontractor', href: '/dashboard/subcontractors/add' },
+      { title: 'Contracts', href: '/dashboard/subcontractors/contracts' },
+    ],
+  },
+  {
+    title: 'Tasks',
+    icon: <ListChecks className="h-5 w-5" />,
+    submenu: [
+      { title: 'Task Board', href: '/dashboard/projects/tasks' },
+      { title: 'My Tasks', href: '/dashboard/projects/tasks/my-tasks' },
+      { title: 'Create Task', href: '/dashboard/projects/tasks/add' },
+    ],
+  },
+  {
     title: 'Analytics',
     href: '/dashboard/analytics',
     icon: <BarChart className="h-5 w-5" />,
@@ -55,8 +74,9 @@ const sidebarItems: SidebarItem[] = [
     title: 'Services',
     icon: <Zap className="h-5 w-5" />,
     submenu: [
-      { title: 'Service Catalog', href: '/dashboard/services' },
+      { title: 'Service Catalog', href: '/dashboard/services/catalog' },
       { title: 'Schedule Service', href: '/dashboard/services/schedule' },
+      { title: 'Service Pricing', href: '/dashboard/services/pricing' },
     ],
   },
   {
@@ -90,6 +110,16 @@ const sidebarItems: SidebarItem[] = [
     title: 'Calendar',
     href: '/dashboard/calendar',
     icon: <Calendar className="h-5 w-5" />,
+  },
+  {
+    title: 'Reports',
+    icon: <FileSpreadsheet className="h-5 w-5" />,
+    submenu: [
+      { title: 'Financial Reports', href: '/dashboard/reports/financial' },
+      { title: 'Project Reports', href: '/dashboard/reports/projects' },
+      { title: 'Client Reports', href: '/dashboard/reports/clients' },
+      { title: 'Custom Reports', href: '/dashboard/reports/custom' },
+    ],
   },
   {
     title: 'Settings',
