@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, Users, FileText, BarChart, Calendar, Settings,
   CreditCard, PieChart, Tag, Target, Zap, Award, Shield, ChevronDown,
-  Menu, X, ListChecks, Briefcase, FileSpreadsheet
+  Menu, X, ListChecks, Briefcase, FileSpreadsheet, Mail, MailPlus, MegaphoneIcon,
+  UserCheck
 } from 'lucide-react';
 
 type SidebarItem = {
@@ -80,13 +81,31 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    title: 'Sales & Marketing',
+    title: 'Marketing',
+    icon: <MegaphoneIcon className="h-5 w-5" />,
+    submenu: [
+      { title: 'Campaigns', href: '/marketing' },
+      { title: 'Create Campaign', href: '/marketing/new' },
+      { title: 'Customer Segments', href: '/segments' },
+      { title: 'Create Segment', href: '/segments/new' },
+    ],
+  },
+  {
+    title: 'Email',
+    icon: <Mail className="h-5 w-5" />,
+    submenu: [
+      { title: 'Templates', href: '/email/templates' },
+      { title: 'Create Template', href: '/email/templates/new' },
+      { title: 'Send Email', href: '/email/send' },
+    ],
+  },
+  {
+    title: 'Sales',
     icon: <Target className="h-5 w-5" />,
     submenu: [
-      { title: 'Lead Management', href: '/dashboard/sales-marketing/leads' },
-      { title: 'Campaigns', href: '/dashboard/sales-marketing/campaigns' },
-      { title: 'Customer Segments', href: '/dashboard/sales-marketing/segments' },
-      { title: 'Proposals', href: '/dashboard/sales-marketing/proposals' },
+      { title: 'Lead Management', href: '/dashboard/sales/leads' },
+      { title: 'Deal Pipeline', href: '/dashboard/sales/deals' },
+      { title: 'Proposals', href: '/dashboard/sales/proposals' },
     ],
   },
   {
@@ -118,6 +137,7 @@ const sidebarItems: SidebarItem[] = [
       { title: 'Financial Reports', href: '/dashboard/reports/financial' },
       { title: 'Project Reports', href: '/dashboard/reports/projects' },
       { title: 'Client Reports', href: '/dashboard/reports/clients' },
+      { title: 'Marketing Reports', href: '/dashboard/reports/marketing' },
       { title: 'Custom Reports', href: '/dashboard/reports/custom' },
     ],
   },
