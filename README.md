@@ -51,7 +51,7 @@ This project is being implemented in phases:
 - Competitive Intelligence
 - System Integration & Optimization
 
-### Phase 8: Training & Deployment 🔜
+### Phase 8: Training & Deployment ✅
 - User Training
 - Final Deployment
 - Maintenance Plan
@@ -114,6 +114,39 @@ After seeding the database, you can login with the following credentials:
 
 - Email: admin@mvonoconsultants.com
 - Password: Admin@123
+
+## Documentation
+
+Comprehensive documentation is available in the `/docs` directory, including:
+
+- User guides for end users
+- Administrator guides for system administrators
+- Technical documentation for developers
+- API reference for integration
+
+## Testing
+
+To run the test suite:
+
+```bash
+npm test
+```
+
+For specific test categories:
+
+```bash
+npm run test:unit     # Run unit tests
+npm run test:api      # Run API tests
+npm run test:e2e      # Run end-to-end tests
+```
+
+## Deployment
+
+Deployment scripts and documentation are available in the `/deployment` directory. For production deployment, follow the steps in `/deployment/docs/production-deployment.md`.
+
+## Maintenance
+
+Maintenance procedures and scripts are available in the `/maintenance` directory. Review the maintenance schedule and procedures in `/maintenance/README.md`.
 
 ## Contact
 
