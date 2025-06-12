@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 249, 249, 249;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 26, 26, 26;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Custom scroll bar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0ea5e9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0284c7;
+}
+
+/* Utility classes for animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-in-out;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.5s ease-in-out;
+  }
+}
+
+/* GSAP-inspired animations */
+.reveal {
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.reveal.active {
+  opacity: 1;
+}
+
+.reveal-left {
+  transform: translateX(-50px);
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.reveal-right {
+  transform: translateX(50px);
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.reveal-up {
+  transform: translateY(50px);
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.reveal-down {
+  transform: translateY(-50px);
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.reveal-left.active,
+.reveal-right.active,
+.reveal-up.active,
+.reveal-down.active {
+  transform: translateX(0) translateY(0);
+  opacity: 1;
+}
+
+/* Smooth transition for links and buttons */
+a, button {
+  transition: all 0.3s ease;
+}

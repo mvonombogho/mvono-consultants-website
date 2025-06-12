@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="180px" height="180px" viewBox="0 0 180 180" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="apple-touch-icon">
+        <rect fill="#f15a27" x="0" y="0" width="180" height="180" rx="40"/>
+        <g transform="translate(22.5, 33.75)" fill="#ffffff" stroke="none">
+            <path d="M19.7,0h13.1a9,9 0 0,1 5.6,1.9 23,23 0 0,1 7.5,9.8l15.4,37.9h-17.8a23,23 0 0,1 -8.3,-10.4Z"/>
+            <path d="M50.4,0h13.1a9,9 0 0,1 5.6,1.9 23,23 0 0,1 7.5,9.8l15.4,37.9h-17.8a23,23 0 0,1 -8.3,-10.4Z"/>
+            <path d="M14.2,31.2a9.5,9.5 0 0,0 1.9,18.4h15.4l-5.8,-14a7.5,7.5 0 0,0 -4.7,-4.4h0a11.4,11.4 0 0,0 -6.8,0Z"/>
+            <path d="M7.5,75.5c-1.9,0.8 -3.8,1.7 -5.7,2.7a8.5,8.5 0 0,0 6.6,3.3h83.8a8.5,8.5 0 0,0 8.3,-7.4c-21.4,6.3 -59.7,-0.9 -93,-1.4Z"/>
+        </g>
+    </g>
+</svg>

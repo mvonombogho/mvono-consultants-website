@@ -1,0 +1,58 @@
+
+<!-- This is a basic HTML file that we'll use to create a proper favicon.ico -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Favicon Generator</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f15a27;
+      width: 32px;
+      height: 32px;
+      overflow: hidden;
+    }
+    .icon {
+      position: absolute;
+      top: 6px;
+      left: 4px;
+      width: 24px;
+      height: 20px;
+    }
+    .m1, .m2, .arc {
+      position: absolute;
+      background: white;
+    }
+    .m1 {
+      left: 0;
+      top: 0;
+      width: 10px;
+      height: 14px;
+      transform: skew(-15deg);
+    }
+    .m2 {
+      left: 11px;
+      top: 0;
+      width: 10px;
+      height: 14px;
+      transform: skew(-15deg);
+    }
+    .arc {
+      left: 0;
+      bottom: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+  </style>
+</head>
+<body>
+  <div class="icon">
+    <div class="m1"></div>
+    <div class="m2"></div>
+    <div class="arc"></div>
+  </div>
+</body>
+</html>

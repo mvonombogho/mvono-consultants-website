@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f9fafb" />
+  
+  <!-- Grid lines -->
+  <g stroke="#e5e7eb" stroke-width="1">
+    <line x1="50" y1="50" x2="50" y2="250" />
+    <line x1="50" y1="250" x2="350" y2="250" />
+    <line x1="50" y1="200" x2="350" y2="200" stroke-dasharray="5,5" />
+    <line x1="50" y1="150" x2="350" y2="150" stroke-dasharray="5,5" />
+    <line x1="50" y1="100" x2="350" y2="100" stroke-dasharray="5,5" />
+    <line x1="50" y1="50" x2="350" y2="50" stroke-dasharray="5,5" />
+    <line x1="125" y1="50" x2="125" y2="250" stroke-dasharray="5,5" />
+    <line x1="200" y1="50" x2="200" y2="250" stroke-dasharray="5,5" />
+    <line x1="275" y1="50" x2="275" y2="250" stroke-dasharray="5,5" />
+    <line x1="350" y1="50" x2="350" y2="250" stroke-dasharray="5,5" />
+  </g>
+  
+  <!-- Axis labels -->
+  <g fill="#6b7280" font-family="Arial" font-size="12">
+    <text x="45" y="50" text-anchor="end">100%</text>
+    <text x="45" y="100" text-anchor="end">75%</text>
+    <text x="45" y="150" text-anchor="end">50%</text>
+    <text x="45" y="200" text-anchor="end">25%</text>
+    <text x="45" y="250" text-anchor="end">0%</text>
+    <text x="50" y="265" text-anchor="middle">0</text>
+    <text x="125" y="265" text-anchor="middle">1</text>
+    <text x="200" y="265" text-anchor="middle">2</text>
+    <text x="275" y="265" text-anchor="middle">3</text>
+    <text x="350" y="265" text-anchor="middle">4</text>
+  </g>
+  
+  <text x="200" y="285" font-family="Arial" font-size="14" text-anchor="middle" fill="#4b5563">Years in Market</text>
+  <text x="20" y="150" font-family="Arial" font-size="14" text-anchor="middle" fill="#4b5563" transform="rotate(-90, 20, 150)">Market Share</text>
+  
+  <!-- Data points -->
+  <g>
+    <!-- Company A (Our company) -->
+    <circle cx="125" cy="100" r="15" fill="#0088FE" opacity="0.8" />
+    <text x="125" y="100" font-family="Arial" font-size="10" text-anchor="middle" fill="white" dominant-baseline="middle">A</text>
+    <text x="125" y="80" font-family="Arial" font-size="12" text-anchor="middle" fill="#0088FE">Mvono</text>
+    
+    <!-- Company B -->
+    <circle cx="275" cy="80" r="20" fill="#00C49F" opacity="0.8" />
+    <text x="275" y="80" font-family="Arial" font-size="10" text-anchor="middle" fill="white" dominant-baseline="middle">B</text>
+    <text x="275" y="55" font-family="Arial" font-size="12" text-anchor="middle" fill="#00C49F">SGS</text>
+    
+    <!-- Company C -->
+    <circle cx="200" cy="120" r="17" fill="#FFBB28" opacity="0.8" />
+    <text x="200" y="120" font-family="Arial" font-size="10" text-anchor="middle" fill="white" dominant-baseline="middle">C</text>
+    <text x="200" y="100" font-family="Arial" font-size="12" text-anchor="middle" fill="#FFBB28">BV</text>
+    
+    <!-- Company D -->
+    <circle cx="350" cy="170" r="13" fill="#FF8042" opacity="0.8" />
+    <text x="350" y="170" font-family="Arial" font-size="10" text-anchor="middle" fill="white" dominant-baseline="middle">D</text>
+    <text x="350" y="150" font-family="Arial" font-size="12" text-anchor="middle" fill="#FF8042">KSS</text>
+    
+    <!-- Company E -->
+    <circle cx="125" cy="200" r="10" fill="#8884d8" opacity="0.8" />
+    <text x="125" y="200" font-family="Arial" font-size="10" text-anchor="middle" fill="white" dominant-baseline="middle">E</text>
+    <text x="125" y="220" font-family="Arial" font-size="12" text-anchor="middle" fill="#8884d8">SafetyFirst</text>
+  </g>
+  
+  <!-- Title -->
+  <text x="200" y="30" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#111827">Market Position Map</text>
+</svg>

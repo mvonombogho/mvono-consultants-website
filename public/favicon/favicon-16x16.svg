@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="favicon-16">
+        <rect fill="#f15a27" x="0" y="0" width="16" height="16" rx="2"/>
+        <g transform="translate(2, 3)" fill="#ffffff">
+            <path d="M1.75,0h1.15a0.8,0.8 0 0,1 0.5,0.15 2,2 0 0,1 0.65,0.85l1.35,3.25h-1.55a2,2 0 0,1 -0.7,-0.9Z"/>
+            <path d="M4.45,0h1.15a0.8,0.8 0 0,1 0.5,0.15 2,2 0 0,1 0.65,0.85l1.35,3.25h-1.55a2,2 0 0,1 -0.7,-0.9Z"/>
+            <path d="M1.2,2.7a0.8,0.8 0 0,0 0.15,1.6h1.35l-0.5,-1.2a0.65,0.65 0 0,0 -0.4,-0.4h0a1,1 0 0,0 -0.6,0Z"/>
+        </g>
+    </g>
+</svg>
