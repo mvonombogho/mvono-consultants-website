@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,21 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Shield, Mail, Lock, AlertCircle } from "lucide-react";
+=======
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Shield, Mail, Lock, AlertCircle } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -19,6 +35,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+<<<<<<< HEAD
 // Test credentials
 const TEST_EMAIL = "admin@mvonoconsultants.com";
 const TEST_PASSWORD = "Test@123";
@@ -33,6 +50,12 @@ export default function LoginPage() {
   useEffect(() => {
     setIsClientSide(true);
   }, []);
+=======
+export default function LoginPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
 
   const {
     register,
@@ -41,17 +64,27 @@ export default function LoginPage() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
+<<<<<<< HEAD
       email: TEST_EMAIL,
       password: TEST_PASSWORD,
+=======
+      email: "",
+      password: "",
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
     },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
     setLoading(true);
+<<<<<<< HEAD
     setErrorMessage("");
 
     try {
       // Use NextAuth for authentication
+=======
+
+    try {
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
       const result = await signIn("credentials", {
         redirect: false,
         email: data.email,
@@ -59,6 +92,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
+<<<<<<< HEAD
         setErrorMessage("Authentication failed: " + result.error);
       } else {
         // Successful login
@@ -68,17 +102,42 @@ export default function LoginPage() {
     } catch (err) {
       console.error("Login error:", err);
       setErrorMessage("An error occurred during login. Please try again.");
+=======
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "Invalid email or password",
+        });
+      } else {
+        // Check user role and redirect accordingly
+        router.push("/dashboard");
+        toast({
+          variant: "success",
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+      }
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "An error occurred. Please try again.",
+      });
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
     } finally {
       setLoading(false);
     }
   };
 
+<<<<<<< HEAD
   // Simple login for testing/development
   const handleSimpleLogin = () => {
     localStorage.setItem('isAuthenticated', 'true');
     window.location.href = '/dashboard';
   };
 
+=======
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -93,6 +152,7 @@ export default function LoginPage() {
         <p className="mt-2 text-center text-sm text-gray-600">
           Access the Mvono Consultants dashboard
         </p>
+<<<<<<< HEAD
         
         {/* Test credentials info */}
         <div className="mt-3 bg-blue-50 border border-blue-200 rounded-md p-3 max-w-xs mx-auto">
@@ -112,16 +172,21 @@ export default function LoginPage() {
             </button>
           </div>
         )}
+=======
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-100">
+<<<<<<< HEAD
           {errorMessage && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
               {errorMessage}
             </div>
           )}
           
+=======
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <Label htmlFor="email" className="block text-sm font-medium text-gray-700">

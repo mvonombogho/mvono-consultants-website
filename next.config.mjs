@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -57,3 +58,20 @@ const nextConfig = {
 };
 
 export default nextConfig;
+=======
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa

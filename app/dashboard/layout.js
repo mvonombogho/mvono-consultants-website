@@ -1,14 +1,20 @@
+<<<<<<< HEAD
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+=======
+import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
 
 export const metadata = {
   title: 'Dashboard - Mvono Consultants',
   description: 'Administration dashboard for Mvono Consultants',
 };
 
+<<<<<<< HEAD
 // Main layout component for the dashboard
 export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -199,6 +205,19 @@ export default function DashboardLayout({ children }) {
         <main className="flex-1 relative overflow-y-auto focus:outline-none">
           {children}
         </main>
+=======
+export default function DashboardLayout({ children }) {
+  return (
+    <div className="min-h-screen bg-slate-100">
+      <div className="flex">
+        <DashboardSidebar />
+        <div className="flex-1">
+          <DashboardHeader />
+          <main>
+            {children}
+          </main>
+        </div>
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
       </div>
     </div>
   );

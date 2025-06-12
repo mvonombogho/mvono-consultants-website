@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -10,6 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import Link from 'next/link';
 import ServiceCardView from '../../../components/dashboard/services/ServiceCardView';
 import ServiceTableView from '../../../components/dashboard/services/ServiceTableView';
+=======
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PlusCircle, Search, Filter, Zap } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Link from 'next/link';
+import ServiceCardView from '@/components/dashboard/services/ServiceCardView';
+import ServiceTableView from '@/components/dashboard/services/ServiceTableView';
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
 
 export default function ServiceCatalogPage() {
   const [services, setServices] = useState([]);

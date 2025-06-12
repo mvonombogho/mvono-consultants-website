@@ -1,7 +1,11 @@
 'use client';
 
 import React from 'react';
+<<<<<<< HEAD
 import ProjectManagement from '../../components/projects/ProjectManagement';
+=======
+import ProjectManagement from '@/components/projects/ProjectManagement';
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
 
 const ProjectsPage = () => {
   return (

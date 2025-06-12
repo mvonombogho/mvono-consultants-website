@@ -166,7 +166,11 @@ export default function ContactSection() {
                   <div>
                     <h4 className="font-medium text-gray-800 mb-1">Location</h4>
                     <p className="text-gray-600">
+<<<<<<< HEAD
                       Kiserian, Kajiado
+=======
+                      Nairobi, Kenya
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
                     </p>
                   </div>
                 </div>

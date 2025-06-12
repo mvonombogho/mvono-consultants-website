@@ -43,6 +43,7 @@ const navItems = [
     ),
   },
   {
+<<<<<<< HEAD
     label: 'Documents',
     href: '/dashboard/documents',
     icon: (
@@ -52,6 +53,8 @@ const navItems = [
     ),
   },
   {
+=======
+>>>>>>> f3fdf5fe94b4c05bc250053eb106d87d9ed6b7fa
     label: 'Analytics',
     href: '/dashboard/analytics',
     icon: (
