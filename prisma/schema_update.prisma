@@ -1,0 +1,38 @@
+// Add these models to the existing schema.prisma file
+
+// Quotation model
+model Quotation {
+  id              String          @id @default(uuid())
+  quotationNumber String          @unique
+  description     String?
+  issueDate       DateTime
+  validUntil      DateTime
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  projectId       String?
+  project         Project?        @relation(fields: [projectId], references: [id])
+  referenceNumber String?
+  items           QuotationItem[]
+  subtotal        Float
+  taxAmount       Float
+  totalAmount     Float
+  status          String          // draft, sent, accepted, rejected, expired, converted
+  notes           String?
+  terms           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Quotation item model
+model QuotationItem {
+  id            String    @id @default(uuid())
+  quotationId   String
+  quotation     Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  description   String
+  quantity      Float
+  unitPrice     Float
+  taxRate       Float     @default(0)
+  amount        Float
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}

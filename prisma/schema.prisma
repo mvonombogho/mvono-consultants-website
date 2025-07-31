@@ -1,0 +1,604 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  name         String
+  password     String
+  role         String         @default("user") // admin, user
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  schedules    Schedule[]     @relation("AssignedTo")
+  createdSchedules Schedule[] @relation("CreatedBy")
+  campaigns    MarketingCampaign[] @relation("CampaignCreator")
+  emailMessages EmailMessage[] @relation("MessageSender")
+  complianceEvents ComplianceEvent[] @relation("ComplianceCreator")
+  competitorNotes CompetitorNote[] @relation("CompetitorNoteCreator")
+  leads         Lead[]        @relation("LeadAssignee")
+  leadActivities LeadActivity[] @relation("ActivityPerformer")
+  salesDeals    SalesDeal[]   @relation("DealOwner")
+  dealActivities DealActivity[] @relation("DealActivityPerformer")
+  proposals     Proposal[]    @relation("ProposalCreator")
+}
+
+// Client model
+model Client {
+  id              String      @id @default(uuid())
+  name            String
+  email           String?
+  phone           String?
+  address         String?
+  kraPin          String?
+  industry        String?
+  contactPerson   String?
+  contactPosition String?
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  invoices        Invoice[]
+  projects        Project[]
+  documents       Document[]  // Relation to documents
+  schedules       Schedule[]  // Relation to schedules
+  customerSegments CustomerSegment[] // Relation to customer segments
+  campaigns       MarketingCampaign[] @relation("CampaignTargets")
+  emailMessages   EmailMessage[] // Relation to email messages
+  complianceEvents ComplianceEvent[] // Relation to compliance events
+  serviceAnniversaries ServiceAnniversary[] // Relation to service anniversaries
+  certifications   Certification[] // Relation to certifications
+  dealOpportunities DealOpportunity[] // Relation to deal opportunities
+  salesDeals      SalesDeal[]    // Relation to sales deals
+  proposals       Proposal[]     // Relation to proposals
+}
+
+// Subcontractor model
+model Subcontractor {
+  id            String      @id @default(uuid())
+  name          String
+  email         String?
+  phone         String?
+  address       String?
+  kraPin        String?
+  specialty     String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  projects      Project[]   @relation("ProjectSubcontractors")
+  documents     Document[]  // Relation to documents
+  schedules     Schedule[]  // Relation to schedules
+}
+
+// Project model
+model Project {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  startDate       DateTime?
+  endDate         DateTime?
+  status          String          // active, completed, cancelled, on-hold
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  subcontractors  Subcontractor[] @relation("ProjectSubcontractors")
+  totalValue      Float?
+  invoices        Invoice[]
+  documents       Document[]      // Relation to documents
+  schedules       Schedule[]      // Relation to schedules
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  dealOpportunities DealOpportunity[] // Relation to deal opportunities 
+}
+
+// Invoice model
+model Invoice {
+  id              String        @id @default(uuid())
+  invoiceNumber   String        @unique
+  description     String?
+  issueDate       DateTime
+  dueDate         DateTime
+  clientId        String
+  client          Client        @relation(fields: [clientId], references: [id])
+  projectId       String?
+  project         Project?      @relation(fields: [projectId], references: [id])
+  lpoReference    String?
+  items           InvoiceItem[]
+  subtotal        Float
+  taxAmount       Float
+  totalAmount     Float
+  status          String        // draft, sent, paid, partial, overdue, cancelled
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  payments        Payment[]
+  documents       Document[]    // Relation to documents
+}
+
+// Invoice item model
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Float
+  unitPrice   Float
+  taxRate     Float    @default(0)
+  amount      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Payment model
+model Payment {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  amount      Float
+  paymentDate DateTime
+  method      String   // bank transfer, cash, cheque, mpesa
+  reference   String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Service model
+model Service {
+  id              String     @id @default(uuid())
+  name            String
+  description     String?
+  category        String
+  price           Float?
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  schedules       Schedule[] // Relation to schedules
+  serviceAnniversaries ServiceAnniversary[] // Relation to service anniversaries
+}
+
+// Document model
+model Document {
+  id               String         @id @default(uuid())
+  title            String
+  description      String?
+  fileName         String
+  fileUrl          String
+  fileType         String         // pdf, docx, xlsx, png, etc.
+  fileSize         Int            // in bytes
+  category         String         // contract, invoice, certificate, report, etc.
+  clientId         String?
+  client           Client?        @relation(fields: [clientId], references: [id])
+  projectId        String?
+  project          Project?       @relation(fields: [projectId], references: [id])
+  invoiceId        String?
+  invoice          Invoice?       @relation(fields: [invoiceId], references: [id])
+  subcontractorId  String?
+  subcontractor    Subcontractor? @relation(fields: [subcontractorId], references: [id])
+  expirationDate   DateTime?      // For documents that expire (certificates, licenses)
+  tags             String?        // Comma-separated tags for searching
+  uploadedById     String         // User who uploaded the document 
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  certifications   Certification[] // Relation to certifications
+  proposals        Proposal[]     // Relation to proposals
+}
+
+// Schedule model for service scheduling
+model Schedule {
+  id              String         @id @default(uuid())
+  title           String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime
+  location        String?
+  status          String         // scheduled, completed, cancelled, postponed
+  priority        String?        // high, medium, low
+  clientId        String?
+  client          Client?        @relation(fields: [clientId], references: [id])
+  projectId       String?
+  project         Project?       @relation(fields: [projectId], references: [id])
+  serviceId       String?
+  service         Service?       @relation(fields: [serviceId], references: [id])
+  subcontractorId String?
+  subcontractor   Subcontractor? @relation(fields: [subcontractorId], references: [id])
+  notes           String?
+  createdById     String
+  createdBy       User           @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedToId    String?
+  assignedTo      User?          @relation("AssignedTo", fields: [assignedToId], references: [id])
+  reminderSent    Boolean        @default(false)
+  isAllDay        Boolean        @default(false)
+  recurrence      String?        // none, daily, weekly, monthly, yearly
+  recurrenceEnd   DateTime?      // End date for recurring schedules
+  color           String?        // For calendar display
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+// ------------- Phase 5: Sales & Marketing Fundamentals Models -------------
+
+// Lead model for lead management
+model Lead {
+  id              String        @id @default(uuid())
+  name            String
+  company         String?
+  email           String?
+  phone           String?
+  source          String        // website, referral, cold-call, event, etc.
+  status          String        // new, contacted, qualified, converted, closed-lost
+  priority        String?       // high, medium, low
+  notes           String?
+  assignedToId    String?
+  assignedTo      User?         @relation("LeadAssignee", fields: [assignedToId], references: [id])
+  conversionDate  DateTime?     // When the lead became a client (if converted)
+  lastContact     DateTime?
+  nextContactDate DateTime?
+  tags            String?       // Comma-separated tags
+  industry        String?
+  estimatedValue  Float?
+  dealOpportunityId String?     // Connection to a deal if the lead progresses
+  dealOpportunity DealOpportunity? @relation(fields: [dealOpportunityId], references: [id])
+  dealId          String?       // Connection to a sales deal
+  deal            SalesDeal?    @relation(fields: [dealId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  activities      LeadActivity[]
+}
+
+// Lead Activity model for tracking interactions
+model LeadActivity {
+  id              String        @id @default(uuid())
+  leadId          String
+  lead            Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  activityType    String        // email, call, meeting, note, task
+  description     String
+  date            DateTime
+  performedById   String
+  performedBy     User          @relation("ActivityPerformer", fields: [performedById], references: [id])
+  outcome         String?       // positive, negative, neutral
+  notes           String?
+  followUpDate    DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// Sales Deal model for sales pipeline
+model SalesDeal {
+  id              String        @id @default(uuid())
+  title           String
+  description     String?
+  stage           String        // prospecting, qualification, proposal, negotiation, closed-won, closed-lost
+  value           Float
+  probability     Float         // Probability of closing (0-100%)
+  expectedCloseDate DateTime
+  actualCloseDate DateTime?
+  clientId        String?
+  client          Client?       @relation(fields: [clientId], references: [id])
+  ownerId         String
+  owner           User          @relation("DealOwner", fields: [ownerId], references: [id])
+  activities      DealActivity[]
+  notes           String?
+  tags            String?       // Comma-separated tags
+  leadSource      String?       // Where the deal originated
+  competitors     String?       // Comma-separated competitor names
+  winReason       String?       // Reason for winning the deal
+  lossReason      String?       // Reason for losing the deal
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  leads           Lead[]        // Connected leads
+  proposals       Proposal[]    // Connected proposals
+}
+
+// Deal Activity model for tracking sales activities
+model DealActivity {
+  id              String        @id @default(uuid())
+  dealId          String
+  deal            SalesDeal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  activityType    String        // email, call, meeting, note, task
+  description     String
+  date            DateTime
+  performedById   String
+  performedBy     User          @relation("DealActivityPerformer", fields: [performedById], references: [id])
+  outcome         String?       // positive, negative, neutral
+  notes           String?
+  followUpDate    DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// Proposal model for proposal management
+model Proposal {
+  id              String        @id @default(uuid())
+  title           String
+  proposalNumber  String        @unique
+  version         Int           @default(1)
+  status          String        // draft, sent, accepted, rejected, expired
+  dealId          String?
+  deal            SalesDeal?    @relation(fields: [dealId], references: [id])
+  clientId        String?
+  client          Client?       @relation(fields: [clientId], references: [id])
+  createdById     String
+  createdBy       User          @relation("ProposalCreator", fields: [createdById], references: [id])
+  content         String?       // JSON string with proposal structure and content
+  sentDate        DateTime?
+  validUntil      DateTime?
+  totalValue      Float
+  notes           String?
+  feedback        String?       // Client feedback on the proposal
+  documentId      String?       // Connection to a document (PDF)
+  document        Document?     @relation(fields: [documentId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// ------------- Phase 6: Advanced Marketing & Integration Models -------------
+
+// Marketing Campaign model
+model MarketingCampaign {
+  id              String         @id @default(uuid())
+  name            String
+  description     String?
+  objective       String?
+  campaignType    String         // email, social, content, event, print, etc.
+  status          String         // draft, scheduled, active, completed, cancelled
+  startDate       DateTime
+  endDate         DateTime
+  budget          Float?
+  actualSpent     Float?         @default(0)
+  ROI             Float?         // Return on Investment percentage
+  createdById     String
+  createdBy       User           @relation("CampaignCreator", fields: [createdById], references: [id])
+  targetClients   Client[]       @relation("CampaignTargets")
+  targetSegmentId String?
+  targetSegment   CustomerSegment? @relation(fields: [targetSegmentId], references: [id])
+  emailMessages   EmailMessage[] // Relation to email messages
+  contentItems    CampaignContent[]
+  metrics         CampaignMetric[]
+  tags            String?        // Comma-separated tags
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+// Campaign Content model
+model CampaignContent {
+  id              String           @id @default(uuid())
+  title           String
+  contentType     String           // email, landing_page, social_post, blog, video, etc.
+  description     String?
+  content         String?          // The actual content or URL to content
+  status          String           // draft, review, approved, published
+  scheduledDate   DateTime?
+  publishedDate   DateTime?
+  campaignId      String
+  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  metrics         ContentMetric[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+// Campaign Metrics model
+model CampaignMetric {
+  id              String          @id @default(uuid())
+  metricName      String          // impressions, clicks, conversions, etc.
+  metricValue     Float
+  metricDate      DateTime
+  campaignId      String
+  campaign        MarketingCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Content Metrics model
+model ContentMetric {
+  id              String          @id @default(uuid())
+  metricName      String          // views, clicks, shares, etc.
+  metricValue     Float
+  metricDate      DateTime
+  contentId       String
+  content         CampaignContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Customer Segmentation model
+model CustomerSegment {
+  id              String          @id @default(uuid())
+  name            String
+  description     String?
+  criteria        String?         // JSON string with segmentation criteria
+  segmentSize     Int?            // Number of clients in segment
+  clients         Client[]        // Clients in this segment
+  isActive        Boolean         @default(true)
+  campaigns       MarketingCampaign[]
+  crossSellOpportunities CrossSellOpportunity[] // Back-reference to cross-sell opportunities
+  tags            String?         // Comma-separated tags
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Cross-Selling model
+model CrossSellOpportunity {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  sourceServiceId String?         // The service client already has
+  targetServiceId String?         // The service being recommended
+  segmentId       String?
+  segment         CustomerSegment? @relation(fields: [segmentId], references: [id])
+  probability     Float?          // Probability of conversion (0-100%)
+  estimatedValue  Float?          // Estimated value of opportunity
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Email Message model
+model EmailMessage {
+  id              String          @id @default(uuid())
+  subject         String
+  body            String
+  status          String          // draft, scheduled, sent, failed
+  messageType     String          // marketing, invoice, reminder, newsletter, etc.
+  scheduledDate   DateTime?
+  sentDate        DateTime?
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  campaignId      String?
+  campaign        MarketingCampaign? @relation(fields: [campaignId], references: [id])
+  senderId        String
+  sender          User            @relation("MessageSender", fields: [senderId], references: [id])
+  opened          Boolean         @default(false)
+  openedDate      DateTime?
+  clicked         Boolean         @default(false)
+  clickedDate     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Email Template model
+model EmailTemplate {
+  id              String          @id @default(uuid())
+  name            String
+  subject         String
+  body            String
+  templateType    String          // marketing, invoice, reminder, newsletter, etc.
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// ------------- Phase 7: Advanced Features & Refinement Models -------------
+
+// Compliance Event model
+model ComplianceEvent {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  complianceType  String          // regulatory, safety, environmental, legal, etc.
+  dueDate         DateTime
+  status          String          // pending, in-progress, completed, overdue
+  priority        String          // low, medium, high
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  createdById     String
+  createdBy       User            @relation("ComplianceCreator", fields: [createdById], references: [id])
+  notes           String?
+  completedDate   DateTime?
+  documentIds     String[]        // Array of document IDs related to this compliance event
+  reminderSent    Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Service Anniversary model
+model ServiceAnniversary {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  anniversaryDate DateTime
+  serviceId       String
+  service         Service         @relation(fields: [serviceId], references: [id])
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  yearsOfService  Int
+  status          String          // upcoming, acknowledged, celebrated
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Certification model
+model Certification {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  certType        String          // safety, quality, environmental, etc.
+  issueDate       DateTime
+  expiryDate      DateTime
+  status          String          // active, expired, renewal-pending
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id])
+  documentId      String?
+  document        Document?       @relation(fields: [documentId], references: [id])
+  reminderSent    Boolean         @default(false)
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Competitor model
+model Competitor {
+  id              String          @id @default(uuid())
+  name            String
+  website         String?
+  industry        String?
+  description     String?
+  strengths       String?         // Comma-separated strengths
+  weaknesses      String?         // Comma-separated weaknesses
+  services        String?         // Comma-separated services
+  marketShare     Float?          // Estimated market share percentage
+  notes           CompetitorNote[]
+  dealOpportunities DealOpportunity[] // Relation to deal opportunities
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Competitor Notes model
+model CompetitorNote {
+  id              String          @id @default(uuid())
+  competitorId    String
+  competitor      Competitor      @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+  title           String
+  content         String
+  createdById     String
+  createdBy       User            @relation("CompetitorNoteCreator", fields: [createdById], references: [id])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// Deal Opportunity model (for Win/Loss analysis)
+model DealOpportunity {
+  id                  String          @id @default(uuid())
+  title               String
+  description         String?
+  clientId            String
+  client              Client          @relation(fields: [clientId], references: [id])
+  projectId           String?
+  project             Project?        @relation(fields: [projectId], references: [id])
+  competitorIds       String[]        // Array of competitor IDs involved
+  competitors         Competitor[]    // Many-to-many relation
+  status              String          // won, lost, pending
+  value               Float           // Monetary value of the deal
+  winProbability      Float?          // Probability of winning (0-100%)
+  closingDate         DateTime?
+  winFactors          String?         // Factors contributing to winning (JSON)
+  lossFactors         String?         // Factors contributing to losing (JSON)
+  learnings           String?         // Learnings from the deal
+  leads               Lead[]          // Connected leads
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+}
+
+// Market Position model
+model MarketPosition {
+  id              String          @id @default(uuid())
+  year            Int
+  quarter         Int
+  industry        String
+  marketSize      Float           // Total market size in monetary value
+  companyShare    Float           // Company's market share percentage
+  topCompetitors  String          // JSON array of top competitors and their shares
+  growthRate      Float           // Market growth rate percentage
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}

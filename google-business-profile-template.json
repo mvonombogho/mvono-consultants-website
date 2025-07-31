@@ -1,0 +1,191 @@
+{
+  "businessProfile": {
+    "basicInformation": {
+      "businessName": "Mvono Consultants",
+      "category": "Safety Consultant",
+      "additionalCategories": [
+        "Business Consultant",
+        "Environmental Consultant", 
+        "Energy Efficiency Service",
+        "Training Centre"
+      ],
+      "description": "Wholly Kenyan owned consultancy firm specializing in safety, energy, and plant systems management since 2009. We provide comprehensive solutions for environmental impact assessment, occupational safety, fire safety audits, energy audits, statutory inspections, and professional training across Kenya and East Africa.",
+      "foundingYear": "2009"
+    },
+    "contactInformation": {
+      "primaryPhone": "+254 701 868 849",
+      "secondaryPhone": "+254 720 270 694",
+      "email": "sales@mvonoconsultants.com",
+      "website": "https://www.mvonoconsultants.com"
+    },
+    "locationAndServiceAreas": {
+      "businessAddress": {
+        "street": "TBD - Add your specific office address",
+        "city": "Nairobi",
+        "county": "Nairobi County", 
+        "country": "Kenya",
+        "postalCode": "TBD"
+      },
+      "serviceAreas": [
+        "Nairobi County",
+        "Mombasa County",
+        "Kisumu County", 
+        "Nakuru County",
+        "Eldoret County",
+        "Meru County",
+        "Nyeri County",
+        "Machakos County",
+        "Kenya (All Counties)",
+        "Uganda",
+        "Tanzania", 
+        "Rwanda",
+        "Burundi",
+        "South Sudan"
+      ]
+    },
+    "businessHours": {
+      "monday": "08:00-17:00",
+      "tuesday": "08:00-17:00",
+      "wednesday": "08:00-17:00", 
+      "thursday": "08:00-17:00",
+      "friday": "08:00-17:00",
+      "saturday": "09:00-13:00",
+      "sunday": "Closed"
+    },
+    "services": [
+      {
+        "name": "Environmental Impact Assessment",
+        "description": "Comprehensive environmental analysis and NEMA compliance documentation"
+      },
+      {
+        "name": "Occupational Safety Consulting", 
+        "description": "Workplace safety audits and DOSH compliance services"
+      },
+      {
+        "name": "Fire Safety Audit",
+        "description": "Complete fire risk assessment and safety protocol development"
+      },
+      {
+        "name": "Energy Audit",
+        "description": "Energy efficiency analysis and cost optimization strategies"
+      },
+      {
+        "name": "Statutory Inspection",
+        "description": "Pressure vessels, lifting equipment, and plant certification"
+      },
+      {
+        "name": "Non-Destructive Testing",
+        "description": "Material integrity testing without equipment damage"
+      },
+      {
+        "name": "Fire Safety Training",
+        "description": "Professional fire prevention and emergency response training"
+      },
+      {
+        "name": "First Aid Training",
+        "description": "Certified first aid and CPR training programs"
+      }
+    ],
+    "attributes": [
+      "Identifies as veteran-owned",
+      "Identifies as Black-owned", 
+      "LGBTQ+ friendly",
+      "Wheelchair accessible",
+      "Appointment required",
+      "Free consultation",
+      "Online services available"
+    ],
+    "specialties": [
+      "DOSH Compliance",
+      "NEMA Environmental Compliance",
+      "Industrial Safety Management",
+      "Energy Efficiency Consulting",
+      "Plant Management",
+      "Safety Training & Certification",
+      "Risk Assessment",
+      "Regulatory Compliance"
+    ]
+  },
+  "contentStrategy": {
+    "posts": [
+      {
+        "type": "service_highlight",
+        "title": "Professional Environmental Impact Assessments",
+        "content": "Ensure your project meets NEMA requirements with our comprehensive EIA services. From baseline studies to mitigation planning, we guide you through every step of environmental compliance.",
+        "image": "environmental_assessment.jpg",
+        "cta": "Get EIA Consultation"
+      },
+      {
+        "type": "safety_tip", 
+        "title": "Workplace Safety Best Practices",
+        "content": "Did you know that proper safety training can reduce workplace accidents by up to 70%? Our certified programs help protect your most valuable asset - your employees.",
+        "image": "safety_training.jpg",
+        "cta": "Book Safety Training"
+      },
+      {
+        "type": "industry_update",
+        "title": "New DOSH Regulations 2025",
+        "content": "Stay compliant with the latest occupational safety regulations. Our experts help you understand and implement new requirements to avoid penalties.",
+        "image": "dosh_compliance.jpg", 
+        "cta": "Schedule Compliance Audit"
+      },
+      {
+        "type": "client_success",
+        "title": "Helping Kenyan Businesses Thrive Safely",
+        "content": "From manufacturing to hospitality, we've helped 100+ companies across East Africa achieve safety excellence and regulatory compliance.",
+        "image": "client_success.jpg",
+        "cta": "View Case Studies"
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What industries do you serve?",
+        "answer": "We serve manufacturing, construction, oil & gas, mining, food processing, pharmaceutical, chemical, hospitality, healthcare, and educational sectors across Kenya and East Africa."
+      },
+      {
+        "question": "How long does an environmental impact assessment take?",
+        "answer": "EIA duration varies by project complexity, typically 2-6 months including baseline studies, stakeholder consultation, and NEMA approval processes."
+      },
+      {
+        "question": "Do you provide training certificates?",
+        "answer": "Yes, all our training programs provide recognized certificates for fire safety, first aid, and occupational safety that meet Kenyan regulatory requirements."
+      },
+      {
+        "question": "What areas do you cover?",
+        "answer": "We primarily serve Kenya with regional coverage across Uganda, Tanzania, Rwanda, Burundi, and South Sudan for specialized projects."
+      }
+    ]
+  },
+  "photos": {
+    "required": [
+      "logo_square.jpg",
+      "office_exterior.jpg", 
+      "team_photo.jpg",
+      "training_session.jpg",
+      "equipment_inspection.jpg"
+    ],
+    "recommended": [
+      "safety_equipment.jpg",
+      "client_meeting.jpg",
+      "field_assessment.jpg",
+      "certification_ceremony.jpg",
+      "office_interior.jpg"
+    ]
+  },
+  "reviewStrategy": {
+    "targets": [
+      "Client satisfaction with safety audits",
+      "Training program effectiveness", 
+      "Environmental assessment quality",
+      "Professional service delivery",
+      "Regulatory compliance support"
+    ],
+    "followUp": [
+      "Post-project satisfaction surveys",
+      "Training feedback collection",
+      "Annual client check-ins",
+      "Google Review requests",
+      "LinkedIn recommendations"
+    ]
+  }
+}

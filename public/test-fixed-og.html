@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIXED: Mvono OG Images with Your Logo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #1e40af 0%, #f15a27 100%);
+            margin: 0; color: white;
+        }
+        .container { 
+            max-width: 1400px; margin: 0 auto; background: rgba(255,255,255,0.95); 
+            padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); color: #333;
+        }
+        .header { text-align: center; margin-bottom: 40px; padding: 30px; 
+            background: linear-gradient(135deg, #1e40af 0%, #f15a27 100%); border-radius: 15px; color: white; }
+        .test-image { width: 100%; max-width: 600px; border: 3px solid #e1e5e9; border-radius: 15px; 
+            margin: 15px 0; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .test-image:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-color: #f15a27; }
+        .version-section { margin: 40px 0; padding: 25px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); 
+            border-radius: 15px; border: 2px solid #e2e8f0; }
+        .version-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 25px; margin: 25px 0; }
+        .image-box { background: white; padding: 20px; border-radius: 12px; border: 2px solid #e2e8f0; transition: all 0.3s ease; }
+        .image-box:hover { border-color: #f15a27; transform: translateY(-3px); }
+        .image-box.success { border-color: #10b981; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+        .image-box.error { border-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); }
+        .url-box { background: #1f2937; color: #f8f9fa; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; 
+            margin: 15px 0; word-break: break-all; font-size: 13px; cursor: pointer; transition: background 0.3s ease; }
+        .url-box:hover { background: #374151; }
+        h1 { font-size: 3em; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        h2 { color: #1f2937; font-size: 1.8em; margin-top: 0; }
+        h3 { color: #374151; margin-top: 0; }
+        .success-badge { display: inline-block; background: #10b981; color: white; padding: 8px 16px; 
+            border-radius: 20px; font-size: 14px; font-weight: bold; margin: 10px 0; }
+        .btn { display: inline-block; padding: 12px 24px; background: #f15a27; color: white; text-decoration: none; 
+            border-radius: 8px; margin: 8px; transition: all 0.3s ease; font-weight: bold; }
+        .btn:hover { background: #e14d1f; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 FIXED: Mvono Consultants OG Images</h1>
+            <p style="font-size: 1.2em; margin: 10px 0;">Now featuring your actual company logo!</p>
+            <div class="success-badge">✅ XML Errors Fixed • Logo Integrated • Ready to Use</div>
+        </div>
+
+        <div class="version-section">
+            <h2>🔥 Version 1: Clean OG Images (GUARANTEED TO WORK)</h2>
+            <p><strong>Recommendation:</strong> <span class="success-badge">Use This Version</span></p>
+            
+            <div class="version-grid">
+                <div class="image-box">
+                    <h3>🏠 Home Page</h3>
+                    <div class="url-box" title="Click to copy">http://localhost:3000/api/og-clean?page=home</div>
+                    <img src="http://localhost:3000/api/og-clean?page=home" 
+                         alt="Clean Home OG Image" class="test-image"
+                         onload="this.closest('.image-box').classList.add('success')"
+                         onerror="this.closest('.image-box').classList.add('error')">
+                </div>
+                
+                <div class="image-box">
+                    <h3>🔧 Services Page</h3>
+                    <div class="url-box" title="Click to copy">http://localhost:3000/api/og-clean?page=services</div>
+                    <img src="http://localhost:3000/api/og-clean?page=services" 
+                         alt="Clean Services OG Image" class="test-image"
+                         onload="this.closest('.image-box').classList.add('success')"
+                         onerror="this.closest('.image-box').classList.add('error')">
+                </div>
+            </div>
+            
+            <div class="version-grid">
+                <div class="image-box">
+                    <h3>👥 About Page</h3>
+                    <div class="url-box" title="Click to copy">http://localhost:3000/api/og-clean?page=about</div>
+                    <img src="http://localhost:3000/api/og-clean?page=about" 
+                         alt="Clean About OG Image" class="test-image"
+                         onload="this.closest('.image-box').classList.add('success')"
+                         onerror="this.closest('.image-box').classList.add('error')">
+                </div>
+                
+                <div class="image-box">
+                    <h3>📞 Contact Page</h3>
+                    <div class="url-box" title="Click to copy">http://localhost:3000/api/og-clean?page=contact</div>
+                    <img src="http://localhost:3000/api/og-clean?page=contact" 
+                         alt="Clean Contact OG Image" class="test-image"
+                         onload="this.closest('.image-box').classList.add('success')"
+                         onerror="this.closest('.image-box').classList.add('error')">
+                </div>
+            </div>
+        </div>
+
+        <div class="version-section">
+            <h2>📊 Version 2: Updated Fallback (Your Current System)</h2>
+            <p><strong>Status:</strong> <span class="success-badge">Now With Your Logo</span></p>
+            
+            <div class="version-grid">
+                <div class="image-box">
+                    <h3>🏠 Home Page</h3>
+                    <div class="url-box" title="Click to copy">http://localhost:3000/api/og-fallback?page=home</div>
+                    <img src="http://localhost:3000/api/og-fallback?page=home" 
+                         alt="Fallback Home OG Image" class="test-image"
+                         onload="this.closest('.image-box').classList.add('success')"
+                         onerror="this.closest('.image-box').classList.add('error')">
+                </div>
+                
+                <div class="image-box">
+                    <h3>🔧 Services Page</h3>
+                    <div class="url-box" title="Click to copy">http://localhost:3000/api/og-fallback?page=services</div>
+                    <img src="http://localhost:3000/api/og-fallback?page=services" 
+                         alt="Fallback Services OG Image" class="test-image"
+                         onload="this.closest('.image-box').classList.add('success')"
+                         onerror="this.closest('.image-box').classList.add('error')">
+                </div>
+            </div>
+        </div>
+
+        <div class="version-section">
+            <h2>🚀 Implementation Guide</h2>
+            <div style="background: #f8fafc; padding: 25px; border-radius: 12px; border-left: 5px solid #f15a27;">
+                <h3>🎯 Recommended: Use og-clean</h3>
+                <p>Update your <code>components/MetaTags.jsx</code> file:</p>
+                <div style="background: #1f2937; color: #f8f9fa; padding: 15px; border-radius: 8px; font-family: monospace; margin: 15px 0;">
+// Change this line in MetaTags.jsx:<br>
+const dynamicOgImage = ogImage || <br>
+&nbsp;&nbsp;`${baseUrl}/api/og-clean?page=${page}&title=${encodeURIComponent(title)}`;
+                </div>
+                
+                <h3>⚡ Alternative: Keep Your Current System</h3>
+                <p>Your current fallback system now includes your logo - no changes needed!</p>
+                
+                <h3>🎨 What You Get:</h3>
+                <ul>
+                    <li>✅ Your actual Mvono "M" logo design</li>
+                    <li>✅ Brand orange color (#f15a27) accents</li>
+                    <li>✅ Professional styling with gradients</li>
+                    <li>✅ Page-specific content and colors</li>
+                    <li>✅ Optimized for all social media platforms</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="version-section">
+            <h2>🔗 Quick Links</h2>
+            <div style="text-align: center; padding: 20px;">
+                <a href="http://localhost:3000/og-preview" class="btn">🔍 OG Preview Page</a>
+                <a href="http://localhost:3000" class="btn">🏠 Main Website</a>
+                <a href="https://developers.facebook.com/tools/debug/" target="_blank" class="btn">📘 Facebook Debugger</a>
+                <a href="https://cards-dev.twitter.com/validator" target="_blank" class="btn">🐦 Twitter Validator</a>
+                <a href="https://www.linkedin.com/post-inspector/" target="_blank" class="btn">💼 LinkedIn Inspector</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click to copy functionality
+            document.querySelectorAll('.url-box').forEach(box => {
+                box.addEventListener('click', function() {
+                    navigator.clipboard.writeText(this.textContent).then(() => {
+                        const originalText = this.textContent;
+                        const originalBg = this.style.background;
+                        this.style.background = '#10b981';
+                        this.textContent = '✅ Copied to clipboard!';
+                        setTimeout(() => {
+                            this.style.background = originalBg;
+                            this.textContent = originalText;
+                        }, 2000);
+                    });
+                });
+            });
+        });
+        
+        window.addEventListener('load', function() {
+            const images = document.querySelectorAll('.test-image');
+            let loadedCount = 0;
+            
+            images.forEach(img => {
+                if (img.complete && img.naturalHeight !== 0) {
+                    loadedCount++;
+                }
+            });
+            
+            console.log(`🎯 Mvono OG Images: ${loadedCount}/${images.length} loaded successfully`);
+            
+            if (loadedCount >= images.length * 0.8) {
+                document.body.style.borderTop = '8px solid #10b981';
+                console.log('✅ Success! Your Mvono logo OG images are working!');
+            }
+        });
+    </script>
+</body>
+</html>

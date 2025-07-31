@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .dark-bg {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+            margin: 10px 0;
+        }
+        .logo {
+            max-width: 300px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Logo Visibility Test</h1>
+        
+        <div class="test-section">
+            <h2>1. Regular Logo (logo.svg) on White Background</h2>
+            <div class="logo-container">
+                <img src="/images/logo.svg" alt="Mvono Logo" class="logo" />
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Footer Logo (footerLogo.svg) on White Background</h2>
+            <div class="logo-container">
+                <img src="/images/footerLogo.svg" alt="Mvono Footer Logo" class="logo" />
+            </div>
+        </div>
+        
+        <div class="test-section dark-bg">
+            <h2>3. Regular Logo (logo.svg) on Dark Background</h2>
+            <div class="logo-container">
+                <img src="/images/logo.svg" alt="Mvono Logo" class="logo" />
+            </div>
+        </div>
+        
+        <div class="test-section dark-bg">
+            <h2>4. Footer Logo (footerLogo.svg) on Dark Background</h2>
+            <div class="logo-container">
+                <img src="/images/footerLogo.svg" alt="Mvono Footer Logo" class="logo" />
+            </div>
+        </div>
+        
+        <div class="test-section dark-bg">
+            <h2>5. Footer Logo with Forced Visibility Styles</h2>
+            <div class="logo-container">
+                <img src="/images/footerLogo.svg" alt="Mvono Footer Logo" class="logo" style="filter: contrast(2) brightness(1.2);" />
+            </div>
+        </div>
+        
+        <div class="test-section dark-bg">
+            <h2>6. Simple Text Fallback</h2>
+            <div class="logo-container">
+                <h1 style="color: white; font-size: 2.5rem; font-weight: bold; margin: 0;">MVONO CONSULTANTS</h1>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check if images are loading
+        document.querySelectorAll('img').forEach((img, index) => {
+            img.onload = function() {
+                console.log(`Image ${index + 1} loaded successfully: ${this.src}`);
+            };
+            img.onerror = function() {
+                console.error(`Image ${index + 1} failed to load: ${this.src}`);
+                this.style.border = '2px solid red';
+                this.alt = 'FAILED TO LOAD: ' + this.alt;
+            };
+        });
+    </script>
+</body>
+</html>

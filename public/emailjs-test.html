@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailJS Test</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Initialize EmailJS with your public key
+        (function() {
+            emailjs.init("al8y9s50qXzE9pnPs");
+        })();
+
+        function sendEmail(e) {
+            e.preventDefault();
+            
+            // Show sending status
+            document.getElementById('status').textContent = "Sending...";
+            
+            // Get form data
+            const formData = {
+                from_name: document.getElementById('from_name').value,
+                from_email: document.getElementById('from_email').value,
+                message: document.getElementById('message').value,
+                service: document.getElementById('service').value,
+                phone: document.getElementById('phone').value,
+                company: document.getElementById('company').value,
+                to_name: "Mvono Consultants"
+            };
+            
+            console.log("Sending email with:", formData);
+            console.log("Service ID:", "service_mrlpiud");
+            console.log("Template ID:", "template_zpiu9yh");
+            
+            // Send the email
+            emailjs.send("service_mrlpiud", "template_zpiu9yh", formData)
+                .then(function(response) {
+                    console.log("SUCCESS!", response.status, response.text);
+                    document.getElementById('status').textContent = "Email sent successfully!";
+                    document.getElementById('status').style.color = "green";
+                }, function(error) {
+                    console.log("FAILED...", error);
+                    document.getElementById('status').textContent = "Error: " + error.text;
+                    document.getElementById('status').style.color = "red";
+                });
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button {
+            background-color: #4285f4;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #3367d6;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>EmailJS Test</h1>
+    
+    <form id="contactForm" onsubmit="sendEmail(event)">
+        <div>
+            <label for="from_name">Full Name:</label>
+            <input type="text" id="from_name" name="from_name" required>
+        </div>
+        
+        <div>
+            <label for="from_email">Email:</label>
+            <input type="email" id="from_email" name="from_email" required>
+        </div>
+        
+        <div>
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone">
+        </div>
+        
+        <div>
+            <label for="company">Company:</label>
+            <input type="text" id="company" name="company">
+        </div>
+        
+        <div>
+            <label for="service">Service of Interest:</label>
+            <select id="service" name="service">
+                <option value="">Select a service</option>
+                <option value="Occupational Safety">Occupational Safety</option>
+                <option value="Fire Safety Audit">Fire Safety Audit</option>
+                <option value="Energy Audit">Energy Audit</option>
+                <option value="Statutory Inspection">Statutory Inspection</option>
+                <option value="Non-Destructive Testing">Non-Destructive Testing</option>
+                <option value="Fire Safety Training">Fire Safety Training</option>
+                <option value="First Aider Training">First Aider Training</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+        </div>
+        
+        <button type="submit">Send Message</button>
+    </form>
+    
+    <div id="status"></div>
+    
+    <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+        <h2>Debug Information</h2>
+        <p><strong>Service ID:</strong> service_mrlpiud</p>
+        <p><strong>Template ID:</strong> template_zpiu9yh</p>
+        <p><strong>Public Key:</strong> al8y9s50qXzE9pnPs</p>
+        <p>Check the browser console (F12) for more detailed error messages.</p>
+    </div>
+</body>
+</html>
