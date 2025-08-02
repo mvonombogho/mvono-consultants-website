@@ -55,6 +55,7 @@
     "react-big-calendar": "^1.8.4",
     "react-day-picker": "^8.9.1",
     "react-dom": "^18",
+    "react-is": "^18.2.0",
     "react-hook-form": "^7.47.0",
     "react-icons": "^4.11.0",
     "recharts": "^2.9.0",
