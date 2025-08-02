@@ -35,6 +35,22 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-DJL2T83ERT"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-DJL2T83ERT', {
+                page_title: document.title,
+                page_location: window.location.href
+              });
+            `
+          }}
+        />
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
         <link rel="shortcut icon" href="/images/favicon.svg" />

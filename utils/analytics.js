@@ -67,7 +67,7 @@ export const trackWhatsAppClick = () => {
 // Page Engagement Events
 export const trackPageView = (pageTitle, pagePath) => {
   if (typeof gtag !== 'undefined') {
-    gtag('config', 'G-MVNC2024KE', {
+    gtag('config', 'G-DJL2T83ERT', {
       page_title: pageTitle,
       page_location: window.location.href,
       page_path: pagePath
