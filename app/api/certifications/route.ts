@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
-import prisma from "@/lib/prisma";
+import { authOptions } from "../../../lib/auth-options";
+import prisma from "../../../lib/prisma";
 
 // GET handler to fetch all certifications
 export async function GET(req: NextRequest) {

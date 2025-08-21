@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import prisma from '../../../../lib/prisma';
 
 // GET /api/clients/[id] - Get a specific client
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
