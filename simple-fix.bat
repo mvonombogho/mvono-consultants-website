@@ -1,50 +1,68 @@
 @echo off
-echo === SIMPLE DEPENDENCY FIX ===
-echo.
+echo =================================
+echo SIMPLE FRAMER MOTION FIX
+echo =================================
 
-echo Step 1: Installing missing dependencies without version specification...
-npm install client-only
-npm install server-only
 echo.
+echo Step 1: Reading current package.json...
+if exist package-backup.json del package-backup.json
+copy package.json package-backup.json
 
-echo Step 2: Running npm install to ensure all dependencies are properly installed...
+echo.
+echo Step 2: Manually adding version overrides...
+
+REM Create a simple PowerShell script to fix package.json
+(
+echo $pkg = Get-Content 'package.json' ^| ConvertFrom-Json
+echo if ^(-not $pkg.resolutions^) { 
+echo     $pkg ^| Add-Member -Type NoteProperty -Name 'resolutions' -Value @{} 
+echo }
+echo $pkg.resolutions.'framer-motion' = '11.0.8'
+echo $pkg ^| ConvertTo-Json -Depth 10 ^| Set-Content 'package.json'
+) > fix-package.ps1
+
+powershell -ExecutionPolicy Bypass -File fix-package.ps1
+del fix-package.ps1
+
+echo.
+echo Step 3: Clean install...
+if exist node_modules rmdir /s /q node_modules
+if exist package-lock.json del package-lock.json
+
+echo.
+echo Step 4: Installing with forced resolution...
 npm install
-echo.
 
-echo Step 3: Clearing Next.js cache...
-if exist ".next" rmdir /s /q ".next"
 echo.
+echo Step 5: Creating next.config.mjs...
+(
+echo /** @type {import^('next'^).NextConfig} */
+echo const nextConfig = {
+echo   experimental: { esmExternals: 'loose' },
+echo   webpack: ^(config^) =^> {
+echo     config.resolve.alias = { ...config.resolve.alias, 'framer-motion': require.resolve^('framer-motion'^) };
+echo     config.module.rules.push^({ test: /\.mjs$/, type: 'javascript/auto', resolve: { fullySpecified: false } }^);
+echo     return config;
+echo   },
+echo   transpilePackages: ['framer-motion']
+echo };
+echo export default nextConfig;
+) > next.config.mjs
 
-echo Step 4: Testing build...
+echo.
+echo Step 6: Testing build...
 npm run build
-echo.
 
-if %ERRORLEVEL% == 0 (
-    echo.
-    echo ✅ SUCCESS! Build completed successfully!
-    echo.
-    echo 🚀 Pushing to GitHub for Vercel deployment...
+if %ERRORLEVEL% EQU 0 (
+    echo ✅ SUCCESS! Deploying...
     git add .
-    git commit -m "Add missing client-only and server-only dependencies"
+    git commit -m "Fix: Framer Motion version conflicts resolved"
     git push origin main
-    echo.
-    echo ✅ Deployed! Check Vercel dashboard for deployment status.
+    echo 🚀 DEPLOYED!
 ) else (
-    echo.
-    echo ❌ Build failed. Let's check what's still missing...
-    echo.
-    echo Running build with verbose output...
-    npm run build > build-error.log 2>&1
-    echo.
-    echo Build errors saved to build-error.log
-    echo Please check the file for specific error details.
-    echo.
-    echo Common next steps:
-    echo 1. Check build-error.log for specific errors
-    echo 2. Try: npm cache clean --force
-    echo 3. Try: rm -rf node_modules && npm install
+    echo ❌ Build failed. Restoring backup...
+    copy package-backup.json package.json
+    echo Check errors above.
 )
 
-echo.
-echo === FIX COMPLETE ===
 pause
