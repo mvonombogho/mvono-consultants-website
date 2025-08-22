@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/db/mongodb';
-import Invoice from '@/models/Invoice';
-import { uploadFile } from '@/lib/s3/s3Service';
+import dbConnect from '../../../../../lib/db/mongodb';
+import Invoice from '../../../../../models/Invoice';
 // Add a PDF generation library to your dependencies
 // For example: import PDFDocument from 'pdfkit'
 

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/db/mongodb';
-import Client from '@/models/Client';
-import Project from '@/models/Project';
-import Invoice from '@/models/Invoice';
+import dbConnect from '../../../lib/db/mongodb';
+import Client from '../../../models/Client';
+import Project from '../../../models/Project';
+import Invoice from '../../../models/Invoice';
 
 // Helper function to calculate monthly revenue
 const calculateMonthlyRevenue = async () => {

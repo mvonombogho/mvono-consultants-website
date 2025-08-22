@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectMongoDB from '@/lib/mongodb';
-import ClientModel from '@/models/mongoose/Client';
+import connectMongoDB from '../../../../lib/mongodb';
+import ClientModel from '../../../../models/mongoose/Client';
 
 // GET - Fetch all clients from MongoDB
 export async function GET() {

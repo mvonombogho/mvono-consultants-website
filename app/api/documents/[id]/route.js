@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/db/mongodb';
-import Document from '@/models/Document';
-import { deleteFile } from '@/lib/s3/s3Service';
+import dbConnect from '../../../../lib/db/mongodb';
+import Document from '../../../../models/Document';
 
 // GET, PUT, DELETE handlers for a single document
 export async function GET(request, { params }) {

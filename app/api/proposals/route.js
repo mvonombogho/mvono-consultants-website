@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/route';
-import prisma from '@/lib/prisma';
+import prisma from '../../../lib/prisma';
 
 // Helper function to generate a unique proposal number
 async function generateUniqueProposalNumber() {

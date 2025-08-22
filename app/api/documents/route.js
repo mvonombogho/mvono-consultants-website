@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/db/mongodb';
-import Document from '@/models/Document';
-import Client from '@/models/Client';
+import dbConnect from '../../../lib/db/mongodb';
+import Document from '../../../models/Document';
+import Client from '../../../models/Client';
 
 // GET handler for listing documents
 export async function GET(request) {

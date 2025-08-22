@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { authOptions } from "../../../../lib/auth";
+import prisma from "../../../../lib/prisma";
 
 // GET /api/dashboard/activities - Get recent activities
 export async function GET(req: NextRequest) {
@@ -23,27 +23,27 @@ export async function GET(req: NextRequest) {
     // Example of how to build real activities from different events:
     
     // Get recent invoices
-    const recentInvoices = await db.invoice.findMany({
+    const recentInvoices = await prisma.invoice.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
       include: { client: true },
     });
 
     // Get recent payments
-    const recentPayments = await db.payment.findMany({
+    const recentPayments = await prisma.payment.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
       include: { invoice: { include: { client: true } } },
     });
 
     // Get recent clients
-    const recentClients = await db.client.findMany({
+    const recentClients = await prisma.client.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
     });
 
     // Get recently completed projects
-    const completedProjects = await db.project.findMany({
+    const completedProjects = await prisma.project.findMany({
       where: { status: "completed" },
       take: 5,
       orderBy: { updatedAt: "desc" },
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Check for overdue invoices
-    const overdueInvoices = await db.invoice.findMany({
+    const overdueInvoices = await prisma.invoice.findMany({
       where: {
         status: { in: ["sent", "partial"] },
         dueDate: { lt: new Date() },

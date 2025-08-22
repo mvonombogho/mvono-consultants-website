@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { authOptions } from "../../../../lib/auth";
+import prisma from "../../../../lib/prisma";
 
 // GET /api/dashboard/stats - Get dashboard statistics
 export async function GET(req: NextRequest) {
@@ -19,24 +19,24 @@ export async function GET(req: NextRequest) {
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
     // Count total clients
-    const totalClients = await db.client.count();
+    const totalClients = await prisma.client.count();
 
     // Count active projects
-    const activeProjects = await db.project.count({
+    const activeProjects = await prisma.project.count({
       where: {
         status: "active",
       },
     });
 
     // Count pending invoices
-    const pendingInvoices = await db.invoice.count({
+    const pendingInvoices = await prisma.invoice.count({
       where: {
         status: { in: ["sent", "overdue"] },
       },
     });
 
     // Calculate revenue this month
-    const revenueThisMonth = await db.invoice.aggregate({
+    const revenueThisMonth = await prisma.invoice.aggregate({
       where: {
         status: "paid",
         issueDate: {
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Calculate total revenue
-    const totalRevenue = await db.invoice.aggregate({
+    const totalRevenue = await prisma.invoice.aggregate({
       where: {
         status: "paid",
       },

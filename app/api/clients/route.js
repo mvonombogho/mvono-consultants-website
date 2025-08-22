@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/db/mongodb';
-import Client from '@/models/Client';
+import dbConnect from '../../../lib/db/mongodb';
+import Client from '../../../models/Client';
 
 export async function GET(request) {
   try {

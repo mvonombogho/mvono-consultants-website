@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import dbConnect from '@/lib/db/mongodb';
-import Document from '@/models/Document';
-import { uploadFile } from '@/lib/s3/s3Service';
+import dbConnect from '../../../../lib/db/mongodb';
+import Document from '../../../../models/Document';
 
 export async function POST(request) {
   try {
