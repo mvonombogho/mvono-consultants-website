@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../../lib/auth-options";
+import { getServerSession } from "next-auth/next";
 import prisma from "../../../../lib/prisma";
 
 // GET handler to fetch a specific certification
@@ -9,7 +8,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     
     if (!session || !session.user) {
       return NextResponse.json(
