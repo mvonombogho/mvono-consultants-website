@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { 
-  HomeIcon, 
-  UsersIcon, 
-  CurrencyDollarIcon, 
-  DocumentTextIcon,
-  ChartBarIcon,
-  CogIcon,
-  ArrowLeftOnRectangleIcon
-} from '@heroicons/react/24/outline'
+  Home, 
+  Users, 
+  DollarSign, 
+  FileText,
+  BarChart3,
+  Settings,
+  LogOut
+} from 'lucide-react'
 
 export default function AdminDashboard() {
   const { data: session } = useSession()
@@ -38,12 +38,12 @@ export default function AdminDashboard() {
   }
 
   const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: HomeIcon, current: true },
-    { name: 'Clients', href: '/admin/clients', icon: UsersIcon, current: false },
-    { name: 'Finances', href: '/admin/finances', icon: CurrencyDollarIcon, current: false },
-    { name: 'Documents', href: '/admin/documents', icon: DocumentTextIcon, current: false },
-    { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon, current: false },
-    { name: 'Settings', href: '/admin/settings', icon: CogIcon, current: false },
+    { name: 'Dashboard', href: '/admin', icon: Home, current: true },
+    { name: 'Clients', href: '/admin/clients', icon: Users, current: false },
+    { name: 'Finances', href: '/admin/finances', icon: DollarSign, current: false },
+    { name: 'Documents', href: '/admin/documents', icon: FileText, current: false },
+    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3, current: false },
+    { name: 'Settings', href: '/admin/settings', icon: Settings, current: false },
   ]
 
   return (
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
                 onClick={() => signOut()}
                 className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
               >
-                <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-1" />
+                <LogOut className="h-4 w-4 mr-1" />
                 Logout
               </button>
             </div>
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <UsersIcon className="h-6 w-6 text-gray-400" />
+                  <Users className="h-6 w-6 text-gray-400" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <CurrencyDollarIcon className="h-6 w-6 text-gray-400" />
+                  <DollarSign className="h-6 w-6 text-gray-400" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <DocumentTextIcon className="h-6 w-6 text-gray-400" />
+                  <FileText className="h-6 w-6 text-gray-400" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <ChartBarIcon className="h-6 w-6 text-gray-400" />
+                  <BarChart3 className="h-6 w-6 text-gray-400" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
               >
                 <div>
                   <span className="rounded-lg inline-flex p-3 bg-blue-50 text-blue-700 ring-4 ring-white">
-                    <UsersIcon className="h-6 w-6" />
+                    <Users className="h-6 w-6" />
                   </span>
                 </div>
                 <div className="mt-8">
@@ -195,7 +195,7 @@ export default function AdminDashboard() {
               >
                 <div>
                   <span className="rounded-lg inline-flex p-3 bg-green-50 text-green-700 ring-4 ring-white">
-                    <CurrencyDollarIcon className="h-6 w-6" />
+                    <DollarSign className="h-6 w-6" />
                   </span>
                 </div>
                 <div className="mt-8">
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
               >
                 <div>
                   <span className="rounded-lg inline-flex p-3 bg-purple-50 text-purple-700 ring-4 ring-white">
-                    <DocumentTextIcon className="h-6 w-6" />
+                    <FileText className="h-6 w-6" />
                   </span>
                 </div>
                 <div className="mt-8">
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
                     <div className="relative flex space-x-3">
                       <div>
                         <span className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
-                          <UsersIcon className="h-4 w-4 text-white" />
+                          <Users className="h-4 w-4 text-white" />
                         </span>
                       </div>
                       <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
                     <div className="relative flex space-x-3">
                       <div>
                         <span className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
-                          <CurrencyDollarIcon className="h-4 w-4 text-white" />
+                          <DollarSign className="h-4 w-4 text-white" />
                         </span>
                       </div>
                       <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">

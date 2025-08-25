@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PlusIcon, DocumentArrowDownIcon, EyeIcon } from '@heroicons/react/24/outline'
+import { Plus, Download, Eye } from 'lucide-react'
 
 export default function FinancialManagement() {
   const [invoices, setInvoices] = useState([])
