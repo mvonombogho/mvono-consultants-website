@@ -1,13 +1,13 @@
-import { getAllPosts, getAllCategories } from '../../lib/api-fixed';
+import { getAllPosts, getAllCategories } from '../lib/api-fixed';
 import Link from 'next/link';
 import Image from 'next/image';
 import Script from 'next/script';
-import { urlFor } from '../../lib/sanity';
+import { urlFor } from '../lib/sanity';
 import { format } from 'date-fns';
-import BlogSearch from '../../components/blog-search';
-import { generateBlogListingSchema } from '../../lib/blogSEO';
-import { getBreadcrumbSchema } from '../../utils/schemaGenerator';
-import Footer from '../../components/shared/Footer';
+import BlogSearch from '../components/blog-search';
+import { generateBlogListingSchema } from '../lib/blogSEO';
+import { getBreadcrumbSchema } from '../utils/schemaGenerator';
+import Footer from '../components/shared/Footer';
 
 export const revalidate = 60; // Revalidate this page every 60 seconds
 

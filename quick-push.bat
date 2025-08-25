@@ -1,46 +1,28 @@
 @echo off
-echo Quick Git Push Script
-echo =====================
+echo ========================================
+echo   QUICK GITHUB PUSH (NO PROMPTS)
+echo ========================================
+echo.
 
 cd /d "C:\Users\Admin\Documents\mvono-consultants-website-main"
 
-REM Check if git is initialized
-if not exist .git (
-    echo Initializing Git repository...
-    git init
-    git remote add origin https://github.com/mvonombogho/mvono-consultants-website.git
-)
-
-REM Check git status
-echo Current git status:
-git status
-
-echo.
-echo Adding all changes...
+echo Staging all changes...
 git add .
 
-REM Get commit message from user
-set /p COMMIT_MSG="Enter commit message (or press Enter for default): "
-if "%COMMIT_MSG%"=="" set COMMIT_MSG="Update: Code changes and improvements"
-
-echo.
 echo Committing changes...
-git commit -m "%COMMIT_MSG%"
+git commit -m "Blog routes fixed and admin system added - automated push"
 
-echo.
 echo Pushing to GitHub...
-git push -u origin main
+git push origin main || git push origin master
 
-if errorlevel 1 (
+if %ERRORLEVEL% equ 0 (
     echo.
-    echo Push failed. Trying to push with force (this will overwrite remote changes)...
-    git push -u origin main --force
+    echo ✅ SUCCESS! Changes pushed to GitHub!
+    echo 🕐 %date% %time%
+) else (
+    echo.
+    echo ❌ Push failed! Check your connection and credentials.
 )
 
 echo.
-echo ========================================
-echo Push completed!
-echo ========================================
-echo Repository: https://github.com/mvonombogho/mvono-consultants-website
-echo.
-pause
+timeout /t 3 /nobreak > nul

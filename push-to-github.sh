@@ -1,89 +1,103 @@
 #!/bin/bash
 
-# Mvono Consultants Website - Git Setup and Push Script
-# This script will initialize git, add all files, and push to your GitHub repository
+echo "========================================"
+echo "  MVONO CONSULTANTS - GITHUB PUSH SCRIPT"
+echo "========================================"
+echo
 
-echo "🚀 Setting up Git repository for Mvono Consultants Website..."
+cd "C:/Users/Admin/Documents/mvono-consultants-website-main" 2>/dev/null || {
+    echo "❌ Error: Could not change to project directory"
+    echo "Please make sure you're running this from the correct location"
+    exit 1
+}
 
-# Navigate to project directory
-cd "C:\Users\Admin\Documents\mvono-consultants-website-main" || exit
+echo "Current directory: $(pwd)"
+echo
 
-# Initialize git repository
-echo "📋 Initializing Git repository..."
-git init
+echo "Checking git status..."
+git status
+echo
 
-# Set up git configuration (replace with your details)
-echo "⚙️ Setting up Git configuration..."
-git config user.name "mvonombogho"
-git config user.email "sales@mvonoconsultants.com"
-
-# Add remote origin
-echo "🔗 Adding remote origin..."
-git remote add origin https://github.com/mvonombogho/mvono-consultants-website.git
-
-# Create .gitignore if it doesn't exist (we already updated it)
-echo "📝 Git ignore file already configured..."
-
-# Add all files to staging
-echo "📦 Adding all files to staging area..."
+echo "========================================"
+echo "  STAGING ALL CHANGES"
+echo "========================================"
+echo "Adding all files to git staging..."
 git add .
+echo
 
-# Create initial commit
-echo "💾 Creating initial commit..."
-git commit -m "🎉 Initial commit: Complete Mvono Consultants website
+echo "Checking staged files..."
+git status
+echo
 
-✅ Features implemented:
-- Modern Next.js 13 website with GigaCloud-inspired design
-- Complete admin dashboard for business management  
-- Client management system with full CRUD operations
-- Financial management: invoices, quotations, payments, statements
-- Project management with task tracking
-- Sales pipeline and lead management
-- Marketing campaign management and customer segmentation
-- Document repository with expiration tracking
-- Service scheduling and resource allocation
-- Analytics dashboards with financial reporting
-- Subcontractor management system
-- Email integration for automated communications
-- Competitive intelligence and market positioning
-- Industry-specific compliance calendar
-- Responsive design optimized for all devices
+echo "========================================"
+echo "  COMMITTING CHANGES"  
+echo "========================================"
+read -p "Enter commit message (or press Enter for default): " commit_message
 
-🛠️ Technology Stack:
-- Next.js 13 (App Router)
-- TypeScript
-- TailwindCSS
-- Prisma ORM
-- NextAuth.js
-- Sanity CMS
-- EmailJS
-- Recharts
-- GSAP animations
-- Radix UI components
+if [ -z "$commit_message" ]; then
+    commit_message="Fix blog routes and add admin system - Phase 1 implementation"
+fi
 
-📊 Project Status:
-- All 8 implementation phases completed
-- Production-ready codebase
-- Comprehensive documentation included
-- User training materials prepared"
+echo
+echo "Committing with message: \"$commit_message\""
+git commit -m "$commit_message"
+echo
 
-# Set main branch
-echo "🌿 Setting default branch to main..."
-git branch -M main
+echo "========================================"
+echo "  PUSHING TO GITHUB"
+echo "========================================"
+echo "Pushing changes to GitHub..."
 
-# Push to GitHub with force (since repository exists but might have different history)
-echo "☁️ Pushing to GitHub repository..."
-git push -u origin main --force
+if git push origin main; then
+    push_success=true
+    branch="main"
+elif git push origin master; then
+    push_success=true  
+    branch="master"
+else
+    push_success=false
+fi
 
-echo "✅ Successfully pushed Mvono Consultants website to GitHub!"
-echo ""
-echo "🔗 Repository URL: https://github.com/mvonombogho/mvono-consultants-website"
-echo "🌐 You can now deploy this to Vercel, Netlify, or your preferred hosting platform"
-echo ""
-echo "📋 Next Steps:"
-echo "1. Set up environment variables on your hosting platform"
-echo "2. Configure your database connection"
-echo "3. Deploy the application"
-echo "4. Test all functionality in production"
-echo ""
-echo "🎉 Your enterprise-grade consulting website is ready to dominate the East African market!"
+if [ "$push_success" = false ]; then
+    echo
+    echo "❌ Push failed to both main and master branches!"
+    echo
+    echo "Possible solutions:"
+    echo "1. Check your internet connection"
+    echo "2. Verify GitHub credentials" 
+    echo "3. Check if you have push permissions"
+    echo "4. Check remote URL: git remote -v"
+    echo
+    echo "Manual commands to try:"
+    echo "git remote -v"
+    echo "git branch"
+    echo "git push origin [your-branch-name]"
+    echo
+    read -p "Press Enter to continue..."
+    exit 1
+fi
+
+echo
+echo "✅ SUCCESS! Changes have been pushed to GitHub ($branch branch)!"
+echo
+
+echo "========================================"
+echo "  PUSH SUMMARY"
+echo "========================================"
+echo
+echo "📝 Commit Message: \"$commit_message\""
+echo "🚀 Repository: Mvono Consultants Website" 
+echo "📅 Time: $(date)"
+echo "🌿 Branch: $branch"
+echo
+echo "Recent changes pushed:"
+echo "✅ Fixed blog route import paths"
+echo "✅ Created missing blog/[slug]/page.js"
+echo "✅ Created missing blog/category/[id]/page.js"
+echo "✅ Updated blog layout with navbar"
+echo "✅ Added admin system foundation"  
+echo "✅ Enhanced project structure"
+echo
+echo "🌐 Your changes should now be live on GitHub!"
+echo
+read -p "Press Enter to continue..."
