@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PlusIcon, SearchIcon, PencilIcon, TrashIcon } from '@heroicons/react/outline'
+import { PlusIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 export default function ClientManagement() {
   const [clients, setClients] = useState([])
@@ -143,7 +143,7 @@ export default function ClientManagement() {
           <div className="max-w-lg mx-auto lg:max-w-none">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon className="h-5 w-5 text-gray-400" />
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 type="text"

@@ -10,8 +10,8 @@ import {
   DocumentTextIcon,
   ChartBarIcon,
   CogIcon,
-  LogoutIcon
-} from '@heroicons/react/outline'
+  ArrowLeftOnRectangleIcon
+} from '@heroicons/react/24/outline'
 
 export default function AdminDashboard() {
   const { data: session } = useSession()
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
                 onClick={() => signOut()}
                 className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
               >
-                <LogoutIcon className="h-4 w-4 mr-1" />
+                <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-1" />
                 Logout
               </button>
             </div>
