@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // Clean, working OG images with your Mvono logo - guaranteed to work
 export async function GET(request) {
   const { searchParams } = new URL(request.url);

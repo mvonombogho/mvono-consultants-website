@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // Working fallback API with your actual Mvono logo design
 export async function GET(request) {
   const { searchParams } = new URL(request.url);

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // Fixed OG API with proper XML syntax and your actual logo
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
