@@ -1,4 +1,5 @@
 import { getPostBySlug, getAllPosts } from '../../../lib/api-fixed';
+import { PortableText } from '@portabletext/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { urlFor } from '../../../lib/sanity';
@@ -10,13 +11,131 @@ export async function generateStaticParams() {
   try {
     const posts = await getAllPosts();
     return posts.map((post) => ({
-      slug: post.slug.current,
+      slug: post.slug?.current || 'untitled',
     }));
   } catch (error) {
     console.error('Error generating static params:', error);
     return [];
   }
 }
+
+export async function generateMetadata({ params }) {
+  try {
+    const post = await getPostBySlug(params.slug);
+    
+    if (!post) {
+      return {
+        title: 'Post Not Found - Mvono Consultants',
+        description: 'The requested blog post could not be found.'
+      };
+    }
+
+    return {
+      title: `${post.title} | Mvono Consultants Blog`,
+      description: post.summary || post.title,
+      openGraph: {
+        title: post.title,
+        description: post.summary || post.title,
+        type: 'article',
+        publishedTime: post.publishedAt,
+        authors: [post.author?.name || 'Mvono Consultants'],
+        images: post.coverImage ? [
+          {
+            url: urlFor(post.coverImage).width(1200).height(630).url(),
+            width: 1200,
+            height: 630,
+            alt: post.title,
+          }
+        ] : [],
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Blog Post - Mvono Consultants',
+      description: 'Read our latest insights on safety, energy, and plant management.'
+    };
+  }
+}
+
+// Custom components for PortableText
+const components = {
+  types: {
+    image: ({ value }) => (
+      <div className="my-8">
+        <Image
+          src={urlFor(value).url()}
+          alt={value.alt || 'Blog image'}
+          width={800}
+          height={400}
+          className="rounded-lg shadow-lg"
+        />
+        {value.caption && (
+          <p className="text-sm text-gray-600 text-center mt-2 italic">
+            {value.caption}
+          </p>
+        )}
+      </div>
+    ),
+  },
+  block: {
+    h2: ({ children }) => (
+      <h2 className="text-2xl lg:text-3xl font-bold mt-12 mb-6 text-gray-900">
+        {children}
+      </h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-xl lg:text-2xl font-bold mt-10 mb-5 text-gray-900">
+        {children}
+      </h3>
+    ),
+    h4: ({ children }) => (
+      <h4 className="text-lg lg:text-xl font-bold mt-8 mb-4 text-gray-900">
+        {children}
+      </h4>
+    ),
+    normal: ({ children }) => (
+      <p className="text-lg leading-relaxed mb-6 text-gray-700">
+        {children}
+      </p>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-blue-500 pl-6 my-8 italic text-gray-700 bg-blue-50 py-4 rounded-r-lg">
+        {children}
+      </blockquote>
+    ),
+  },
+  marks: {
+    strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+    em: ({ children }) => <em className="italic">{children}</em>,
+    link: ({ value, children }) => (
+      <a
+        href={value.href}
+        className="text-blue-600 hover:text-blue-800 underline transition-colors"
+        target={value.blank ? '_blank' : '_self'}
+        rel={value.blank ? 'noopener noreferrer' : undefined}
+      >
+        {children}
+      </a>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="list-disc list-inside mb-6 space-y-2 text-lg text-gray-700">
+        {children}
+      </ul>
+    ),
+    number: ({ children }) => (
+      <ol className="list-decimal list-inside mb-6 space-y-2 text-lg text-gray-700">
+        {children}
+      </ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }) => <li className="ml-4">{children}</li>,
+    number: ({ children }) => <li className="ml-4">{children}</li>,
+  },
+};
 
 export default async function BlogPostPage({ params }) {
   let post = null;
@@ -159,10 +278,10 @@ export default async function BlogPostPage({ params }) {
         {/* Content */}
         <div className="prose prose-lg max-w-none">
           {post.body ? (
-            <div className="text-lg leading-relaxed text-gray-700">
-              {/* Simple text content rendering - for rich content, you'd use PortableText */}
-              <p>{post.body}</p>
-            </div>
+            <PortableText 
+              value={post.body} 
+              components={components}
+            />
           ) : (
             <p className="text-gray-600 italic">Content coming soon...</p>
           )}
@@ -173,7 +292,7 @@ export default async function BlogPostPage({ params }) {
           <h3 className="text-lg font-semibold mb-4">Share this article</h3>
           <div className="flex space-x-4">
             <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://mvonoconsultants.com/blog/${post.slug.current}`)}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://mvonoconsultants.com/blog/${post.slug?.current}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
@@ -181,7 +300,7 @@ export default async function BlogPostPage({ params }) {
               Twitter
             </a>
             <a
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://mvonoconsultants.com/blog/${post.slug.current}`)}`}
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://mvonoconsultants.com/blog/${post.slug?.current}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors"
